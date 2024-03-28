@@ -1,0 +1,242 @@
+{
+	"_type": "export",
+	"__export_format": 4,
+	"__export_date": "2024-03-22T00:29:20.703Z",
+	"__export_source": "insomnia.desktop.app:v8.6.1",
+	"resources": [
+		{
+			"_id": "req_e648c4372e394841b50173ede37038f0",
+			"parentId": "wrk_ee4f19b489a84efcbf8785b741535ece",
+			"modified": 1711065510804,
+			"created": 1711064287761,
+			"url": "http://localhost:5000/api/v1/auth/register",
+			"name": "Register User",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"email\": \"mmouse@disney.com\",\n\t\"password1\": \"password\",\n\t\"password2\": \"password\",\n\t\"username\": \"mmouse1s\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{ "name": "Content-Type", "value": "application/json" },
+				{ "name": "User-Agent", "value": "insomnia/8.6.1" }
+			],
+			"authentication": {},
+			"metaSortKey": -1711064287761,
+			"isPrivate": false,
+			"pathParameters": [],
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingRebuildPath": true,
+			"settingFollowRedirects": "global",
+			"_type": "request"
+		},
+		{
+			"_id": "wrk_ee4f19b489a84efcbf8785b741535ece",
+			"parentId": null,
+			"modified": 1711063876552,
+			"created": 1711063876552,
+			"name": "NodeJS-StarterTemplate_AUTH",
+			"description": "",
+			"scope": "collection",
+			"_type": "workspace"
+		},
+		{
+			"_id": "req_6756da792b5745d188894b65598082a4",
+			"parentId": "wrk_ee4f19b489a84efcbf8785b741535ece",
+			"modified": 1711066189797,
+			"created": 1711065501337,
+			"url": "http://localhost:5000/api/v1/auth/login",
+			"name": "Login User",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"email\": \"mmouse@disney.com\",\n\t\"password\": \"password\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{ "name": "Content-Type", "value": "application/json" },
+				{ "name": "User-Agent", "value": "insomnia/8.6.1" }
+			],
+			"authentication": {},
+			"metaSortKey": -1710980310548,
+			"isPrivate": false,
+			"pathParameters": [],
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingRebuildPath": true,
+			"settingFollowRedirects": "global",
+			"_type": "request"
+		},
+		{
+			"_id": "req_d8f244e4a39542db8360c97906fac939",
+			"parentId": "wrk_ee4f19b489a84efcbf8785b741535ece",
+			"modified": 1711066357621,
+			"created": 1711065865637,
+			"url": "http://localhost:5000/api/v1/auth/verify",
+			"name": "Verify User",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"verificationToken\": \"ee043b320eff4bb003bd3a4c35af1081375960b142b655dba9d43623a5babcd0ed597629010a3aa40ecdf45823360fe58240272e91c820c12498ef9c4f990cff864ae726da1f6580d9763684aae3e1f6ef8c6c8c4cf164897217a299316d5c28a98f17f51a28907415826ef1d2e6208c913b3cb3639a762cb660dbc94f30558924b9598afe236476330478f5aed0fb6b2594829dd7634402e14591573d7f6353f9fe0cedb2301cc6153ed179d9b1e60fe7b92c467030924c05b6c1d61b0d0917f0b96df6ab6fc15ba52ac987b88ca7cd7fa0484e6f1d419a3c4e6c19eba91a9d42a97f70eb522b49a74156ff5f49240b2919402be319a1efaff0af05b8a3485a\",\n\t\"email\": \"mmouse@disney.com\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{ "name": "Content-Type", "value": "application/json" },
+				{ "name": "User-Agent", "value": "insomnia/8.6.1" }
+			],
+			"authentication": {},
+			"metaSortKey": -1710938321941.5,
+			"isPrivate": false,
+			"pathParameters": [],
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingRebuildPath": true,
+			"settingFollowRedirects": "global",
+			"_type": "request"
+		},
+		{
+			"_id": "req_03b3564c3a7149ee8e9d5c56a61c88fc",
+			"parentId": "wrk_ee4f19b489a84efcbf8785b741535ece",
+			"modified": 1711066504054,
+			"created": 1711066399543,
+			"url": "http://localhost:5000/api/v1/auth/logout",
+			"name": "Logout User",
+			"description": "",
+			"method": "DELETE",
+			"body": { "mimeType": "application/json", "text": "" },
+			"parameters": [],
+			"headers": [
+				{ "name": "Content-Type", "value": "application/json" },
+				{ "name": "User-Agent", "value": "insomnia/8.6.1" }
+			],
+			"authentication": {},
+			"metaSortKey": -1710917327638.25,
+			"isPrivate": false,
+			"pathParameters": [],
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingRebuildPath": true,
+			"settingFollowRedirects": "global",
+			"_type": "request"
+		},
+		{
+			"_id": "req_9471c5435fc344e89142321e656e755f",
+			"parentId": "wrk_ee4f19b489a84efcbf8785b741535ece",
+			"modified": 1711066687286,
+			"created": 1711066628118,
+			"url": "http://localhost:5000/api/v1/auth/forgot-password",
+			"name": "Forgot Password",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"email\": \"mmouse@disney.com\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{ "name": "Content-Type", "value": "application/json" },
+				{ "name": "User-Agent", "value": "insomnia/8.6.1" }
+			],
+			"authentication": {},
+			"metaSortKey": -1710906830486.625,
+			"isPrivate": false,
+			"pathParameters": [],
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingRebuildPath": true,
+			"settingFollowRedirects": "global",
+			"_type": "request"
+		},
+		{
+			"_id": "req_ee319e35989a483aae29d0323584e935",
+			"parentId": "wrk_ee4f19b489a84efcbf8785b741535ece",
+			"modified": 1711067192791,
+			"created": 1711066818097,
+			"url": "http://localhost:5000/api/v1/auth/reset-password",
+			"name": "Reset Password",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"token\": \"ee043b320eff4bb003bd3a4c35af1081375960b142b655dba9d43623a5babcd0ed597629010a3aa40ecdf45823360fe58240272e91c820c12498ef9c4f990cff864ae726da1f6580d9763684aae3e1f6ef8c6c8c4cf164897217a299316d5c28a98f17f51a28907415826ef1d2e6208c913b3cb3639a762cb660dbc94f30558924b9598afe236476330478f5aed0fb6b2594829dd7634402e14591573d7f6353f9fe0cedb2301cc6153ed179d9b1e60fe7b92c467030924c05b6c1d61b0d0917f0b96df6ab6fc15ba52ac987b88ca7cd7fa0484e6f1d419a3c4e6c19eba91a9d42a97f70eb522b49a74156ff5f49240b2919402be319a1efaff0af05b8a3485a\",\n\t\"email\": \"mmouse@disney.com\",\n\t\"password\": \"newPassword\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{ "name": "Content-Type", "value": "application/json" },
+				{ "name": "User-Agent", "value": "insomnia/8.6.1" }
+			],
+			"authentication": {},
+			"metaSortKey": -1710901581910.8125,
+			"isPrivate": false,
+			"pathParameters": [],
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingRebuildPath": true,
+			"settingFollowRedirects": "global",
+			"_type": "request"
+		},
+		{
+			"_id": "env_f0f5fb2923fbd94a37187b9054f7c9a1f867ca5c",
+			"parentId": "wrk_ee4f19b489a84efcbf8785b741535ece",
+			"modified": 1711063876568,
+			"created": 1711063876568,
+			"name": "Base Environment",
+			"data": {},
+			"dataPropertyOrder": null,
+			"color": null,
+			"isPrivate": false,
+			"metaSortKey": 1711063876568,
+			"_type": "environment"
+		},
+		{
+			"_id": "jar_f0f5fb2923fbd94a37187b9054f7c9a1f867ca5c",
+			"parentId": "wrk_ee4f19b489a84efcbf8785b741535ece",
+			"modified": 1711067159004,
+			"created": 1711063876573,
+			"name": "Default Jar",
+			"cookies": [
+				{
+					"key": "accessToken",
+					"value": "s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXIiOnsibmFtZSI6Im1tb3VzZTFzIiwidXNlcklkIjoiNjVmY2M5MzA1MzA5YTY0NDA5MDY2ODhjIiwicm9sZSI6IlVTRVIifX0sImlhdCI6MTcxMTA2NzE1OH0.D3fZeW8ysijOza6oBu_eaYg93W2sCb4lLQP3eHqOkZM.%2B%2FtOBeL4oHv2XtmfliROX%2FejDUa8G5RMi17cVt7dUfA",
+					"expires": "2024-03-22T01:25:58.000Z",
+					"domain": "localhost",
+					"path": "/",
+					"httpOnly": true,
+					"hostOnly": true,
+					"creation": "2024-03-22T00:21:48.891Z",
+					"lastAccessed": "2024-03-22T00:25:59.002Z",
+					"id": "6278490b-5d48-448e-bf1e-500937195f02"
+				},
+				{
+					"key": "refreshToken",
+					"value": "s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXIiOnsibmFtZSI6Im1tb3VzZTFzIiwidXNlcklkIjoiNjVmY2M5MzA1MzA5YTY0NDA5MDY2ODhjIiwicm9sZSI6IlVTRVIifSwicmVmcmVzaFRva2VuIjoiMWI0NThiYjAwMDRkOTRmOTVkZTcxN2JkZWZlNjRlOTY3ZDRiZWNiNGZhMjVjZDRhOGMxMTUyMzJmNjBjMDJlYzFhNmY1NDJlYmQ5YzlhYTIifSwiaWF0IjoxNzExMDY3MTU4fQ.W5U2YSh7bYuUEKVti2BpDT4EySDwEUaJrya_IUkUZRw.ma9OMpVEsd5Qg2LS7ORuIVe2Mkb9zAfvzZ0fbEtDCsE",
+					"expires": "2024-03-23T00:25:58.000Z",
+					"domain": "localhost",
+					"path": "/",
+					"httpOnly": true,
+					"hostOnly": true,
+					"creation": "2024-03-22T00:21:48.896Z",
+					"lastAccessed": "2024-03-22T00:25:59.003Z",
+					"id": "9cbb8c86-fba6-43d8-9818-11e5c54bc320"
+				}
+			],
+			"_type": "cookie_jar"
+		}
+	]
+}
