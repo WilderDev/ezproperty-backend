@@ -25,8 +25,8 @@ const UserSchema = new Schema({
 	},
 	role: {
 		type: String,
-		enum: ["ADMIN", "USER"],
-		default: "USER"
+		enum: ["MANAGER", "STAFF", "TENANT"],
+		default: "TENANT"
 	},
 	verificationToken: String,
 	isVerified: {
@@ -39,6 +39,45 @@ const UserSchema = new Schema({
 	},
 	passwordTokenExpirationDate: {
 		type: Date
+	},
+	firstName: {
+		type: String,
+		required: true
+	},
+	middleInitial: {
+		type: String,
+		required: true,
+		maxLength: 1
+	},
+	lastName: {
+		type: String,
+		required: true
+	},
+	signedLeaseOn: {
+		type: Date
+	},
+	leaseType: {
+		type: String,
+		enum: ["Yearly", "Monthly"]
+	},
+	leaseExpiration: {
+		type: Date
+	},
+	phoneNumber: {
+		type: String,
+		match: [
+			/^(?:\+?1)?(?:\s|-)?\(?\d{3}\)?(?:\s|-)?\d{3}(?:\s|-)?\d{4}$/,
+			"please use a valid phone number"
+		],
+		required: true
+	},
+	emergencyContact: {
+		type: {
+			firstName: { type: String, required: true },
+			lastName: { type: String, required: true },
+			relationship: { type: String, required: true },
+			phoneNumber: { type: String, required: true }
+		}
 	}
 });
 
