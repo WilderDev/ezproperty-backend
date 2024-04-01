@@ -11,10 +11,10 @@ const { good, bad } = require("../lib/utils/res");
 const registerUser = async (req, res) => {
 	const { email, password1, password2, username } = req.body; // Destructure the email, password, and username from the request body
 
-	const emailTaken = await User.findOne({ email }); // Check if the email is already taken
+	const emailAlreadyExists = await User.findOne({ email }); // Check if the email is already taken
 
 	// If the email is already taken, send a 400 response
-	if (emailTaken) {
+	if (emailAlreadyExists) {
 		return bad({ res, message: "Invalid username or email" });
 	}
 
@@ -26,7 +26,7 @@ const registerUser = async (req, res) => {
 	}
 
 	const isFirstUser = (await User.countDocuments({})) === 0; // Check if the user is the first user
-	const role = isFirstUser ? "ADMIN" : "USER"; // If the user is the first user, set the role to "admin", otherwise set it to "user"
+	const role = isFirstUser ? "manager" : "tenant"; // If the user is the first user, set the role to "manager", otherwise set it to "tenant"
 
 	const verificationToken = crypto.randomBytes(2 ** 8).toString("hex"); // Generate a verification token
 
