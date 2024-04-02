@@ -33,6 +33,12 @@ const UserSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
+	isWorker: {
+
+	},
+	isTenant: {
+
+	},
 	verified: Date,
 	passwordToken: {
 		type: String
@@ -53,16 +59,6 @@ const UserSchema = new Schema({
 		type: String,
 		required: true
 	},
-	signedLeaseOn: {
-		type: Date
-	},
-	leaseType: {
-		type: String,
-		enum: ["Yearly", "Monthly"]
-	},
-	leaseExpiration: {
-		type: Date
-	},
 	phoneNumber: {
 		type: String,
 		match: [
@@ -78,8 +74,51 @@ const UserSchema = new Schema({
 			relationship: { type: String, required: true },
 			phoneNumber: { type: String, required: true }
 		}
+	},
+	workSpecialization: {
+		type: String,
+		enum: [""],
+	},
+	workSchedule: {
+		{
+			1: [],
+			2: [],
+			3: [],
+			4: [],
+			5: [],
+			6: [],
+			7: []
+		}
 	}
+
 });
+
+
+const now = new Date(Date.now())
+const today = now.setUTCHours(0,0,0,0)
+function generateNextDay(date) {
+	const day = 1000 * 60 * 60 * 24;
+	const tomorrow = new Date(date + day)
+	console.log(date)
+	console.log(tomorrow.getTime());
+	return tomorrow;
+}
+
+function generateNext7Days(date) {
+	
+	
+	
+	
+}
+
+
+
+
+
+
+
+
+
 
 // * MIDDLEWARE
 // Hash password before saving

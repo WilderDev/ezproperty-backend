@@ -25,10 +25,6 @@ const TicketSchema = new Schema({
 		type: String,
 		enum: ["Backlog", "In-Progress", "Blockage", "Completed"],
 		required: true
-	},
-	assignedWorker: {
-		type: Types.ObjectId,
-		ref: "User"
 	}
 });
 
