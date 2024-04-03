@@ -7,7 +7,7 @@ const TicketSchema = new Schema({
 	propertyId: {
 		type: Types.ObjectId,
 		ref: "Property",
-		required: true
+		// required: true
 	},
 	priorityLevel: {
 		type: String,
@@ -31,7 +31,8 @@ const TicketSchema = new Schema({
 	},
 	assignedWorker: {
 		type: Types.ObjectId,
-		ref: "User"
+		ref: "User",
+        default: "None Assigned"
 	}
 });
 

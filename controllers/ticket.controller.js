@@ -22,6 +22,8 @@ const updateTicket = async (req, res) => {
     const {id: ticketID} = req.params
     const ticket = await Ticket.findByIdAndUpdate({ _id: ticketID }, req.body, {new: true, runValidators: true})
 
+    console.log(ticket)
+
     res.status(200).json({ success: true,
     data: { ticket }})
 

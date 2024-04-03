@@ -6,3 +6,5 @@ router.delete("/delete/:id", deleteTicket)
 router.patch("/edit/:id", updateTicket)
 router.get("/all", getAllTickets)
 router.get("/find/:id", getTicket)
+
+module.exports = router

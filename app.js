@@ -1,9 +1,9 @@
 // * IMPORTS
 require("dotenv").config();
-require("express-async-errors");
-
 const express = require("express");
 const app = express();
+require("express-async-errors");
+
 
 const connectToMongo = require("./lib/db/mongoose-connect");
 
@@ -37,7 +37,7 @@ app.use(xss()); // XSS
 
 // * ROUTES
 app.use("/api/v1/auth", require("./routes/auth.routes"));
-app.use('/api/v1/tickets', ticketRoutes)
+app.use('/api/v1/tickets', ticketRoutes);
 
 // * START SERVER & DB
 (async () => {
