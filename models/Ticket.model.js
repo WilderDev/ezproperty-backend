@@ -13,7 +13,11 @@ const TicketSchema = new Schema({
 	},
 	type: {
 		type: String,
+<<<<<<< Updated upstream
 		enum: ["Plumbing", "Electrical", "Structural", "HVAC", "General", "Pest", "Other"],
+=======
+		enum: ["PLUMBING", "ELECTRICAL", "HVAC", "APPLIANCE", "PEST", "OTHER"],
+>>>>>>> Stashed changes
 		required: true
 	},
 	description: {
