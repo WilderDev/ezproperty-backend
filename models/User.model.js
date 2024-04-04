@@ -71,7 +71,7 @@ const UserSchema = new Schema({
 		}
 	},
 	workSpecialization: {
-		type: String,
+		type: [String],
 		enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL MAINTENANCE"]
 	},
 	workSchedule: {
