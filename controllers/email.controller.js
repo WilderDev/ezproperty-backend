@@ -1,5 +1,6 @@
 // * IMPORTS * //
 const { sendEmail } = require("../lib/emails/nodemailer");
+const { good, bad } = require("../lib/utils/res");
 
 // * CONTROLLERS * //
 // TODO: Email the owner once a tenant has made a ticket request, so he can schedule a worker and a time
@@ -33,6 +34,10 @@ const emailOwnerOnTenantTicketRequest = async (req, res) => {
 
     Sincerely,<br>EzProperty
     `;
+
+	// send the email
+
+	// send success
 };
 
 // TODO: Email the woker once they were assigned to a ticket
