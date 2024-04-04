@@ -11,13 +11,12 @@ const TicketSchema = new Schema({
 		enum: ["HIGH", "MEDIUM", "LOW"],
 		required: true
 	},
+	image: {
+		type: String
+	},
 	type: {
 		type: String,
-<<<<<<< Updated upstream
-		enum: ["Plumbing", "Electrical", "Structural", "HVAC", "General", "Pest", "Other"],
-=======
 		enum: ["PLUMBING", "ELECTRICAL", "HVAC", "APPLIANCE", "PEST", "OTHER"],
->>>>>>> Stashed changes
 		required: true
 	},
 	description: {
