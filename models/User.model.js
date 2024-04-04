@@ -34,8 +34,6 @@ const UserSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
-	isWorker: {},
-	isTenant: {},
 	verified: Date,
 	passwordToken: {
 		type: String
@@ -64,6 +62,10 @@ const UserSchema = new Schema({
 		],
 		required: true
 	},
+	propertyId: {
+		type: Types.ObjectId,
+		ref: "Property"
+	},
 	emergencyContact: {
 		type: {
 			firstName: { type: String, required: true },
@@ -74,7 +76,7 @@ const UserSchema = new Schema({
 	},
 	workSpecialization: {
 		type: String,
-		enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL MAINTENANCE"]
+		enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL"]
 	},
 	workSchedule: {
 		type: Types.ObjectId,
@@ -125,7 +127,7 @@ UserSchema.methods.generateToken = function () {
 
 // function to generate a schedule
 UserSchema.methods.genSchedule = async function (unixtimestamp) {
-	if (this.role !== "STAFF") return null; // if the user is not a staff member, return null
+	if (this.role !== "WORKER") return null; // if the user is not a staff member, return null
 	let date = new Date(unixtimestamp); // get the date
 	date.setUTCHours(0, 0, 0, 0); // set the date to midnight
 	let dayMillis = 1000 * 60 * 60 * 24; // 24 hours in milliseconds
@@ -172,7 +174,7 @@ UserSchema.methods.genSchedule = async function (unixtimestamp) {
 
 // function to extend the schedule
 UserSchema.methods.extendSchedule = async function () {
-	if (this.role !== "STAFF") return null; // if the user is not a staff member, return null
+	if (this.role !== "WORKER") return null; // if the user is not a staff member, return null
 	let schedule = await Schedule.findOne({ _id: this.workSchedule }); // find the schedule using the user's schedule id
 	if (!schedule) return null; // if the schedule is not found, return null
 
@@ -219,7 +221,7 @@ UserSchema.methods.extendSchedule = async function () {
 
 // function to trim the schedule
 UserSchema.methods.trimSchedule = async function () {
-	if (this.role !== "STAFF") return null; // if the user is not a staff member, return null
+	if (this.role !== "WORKER") return null; // if the user is not a staff member, return null
 	let schedule = await Schedule.findOne({ _id: this.workSchedule }); // find the schedule using the user's schedule id
 	if (!schedule) return null; // if the schedule is not found, return null
 
