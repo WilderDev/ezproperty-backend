@@ -52,7 +52,7 @@ const grantTenant = async (req, res) => {
 	if (!user) {
 		return bad({ res, status: 404, message: "User not found" }); // return 404 if user not found
 	}
-	if (user.role.includes("TENANT")) {
+	if (user.role === "TENANT") {
 		// check if user is already a tenant
 		return bad({ res, status: 400, message: "User is already a tenant" }); // return 400 if user is already a tenant
 	}
@@ -62,7 +62,7 @@ const grantTenant = async (req, res) => {
 		return bad({ res, status: 404, message: "Property not found" }); // return 404 if property not found
 	}
 	user.propertyId = propertyId; // set propertyId to user
-	user.role.push("TENANT"); // add tenant role to user
+	user.role = "TENANT"; // add tenant role to user
 	await user.save(); // save user
 	return good({ res, status: 200, data: user }); // return 200 and user data
 };
@@ -75,7 +75,7 @@ const revokeTenant = async (req, res) => {
 	if (!user) {
 		return bad({ res, status: 404, message: "User not found" }); // return 404 if user not found
 	}
-	if (!user.role.includes("TENANT")) {
+	if (!user.role === "TENANT") {
 		// check if user is a tenant
 		return bad({ res, status: 400, message: "User is not a tenant" }); // return 400 if user is not a tenant
 	}
@@ -85,7 +85,7 @@ const revokeTenant = async (req, res) => {
 		return bad({ res, status: 404, message: "Property not found" }); // return 404 if property not found
 	}
 	delete user.propertyId; // remove propertyId from user
-	user.role = user.role.filter((role) => role !== "TENANT"); // remove tenant role from user
+	delete user.role; // remove tenant role from user
 	await user.save(); // save user
 	return good({ res, status: 200, data: user }); // return 200 and user data
 };
