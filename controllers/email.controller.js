@@ -3,41 +3,62 @@ const { sendEmail } = require("../lib/emails/nodemailer");
 const { good, bad } = require("../lib/utils/res");
 
 // * CONTROLLERS * //
-// TODO: Email the owner once a tenant has made a ticket request, so he can schedule a worker and a time
+// Email the owner once a tenant has made a ticket request, so he can schedule a worker and a time
 const emailOwnerOnTenantTicketRequest = async (req, res) => {
 	// Get the information from the req body
 	const { tenantName, issueType, issueDesc, issuePriority, address } = req.body;
 
+	if (!tenantName || !issueType || !issueDesc || !issuePriority || !address) {
+		return bad({ res, message: "Not all needed information was provided" });
+	}
+
 	// AI solution
 	const solution = ""; // TODO: AI SOLUTION
 
+	// TODO: Get the owner???
+	const to = "owner@test.com";
+
 	// Subject of the email
-	const subject = "Ticket Request: Worker Assignment Needed";
+	const subject = `Ticket Request from ${tenantName} at ${address}`;
+
+	// ! DEV ORIGIN
+	const origin = "http://localhost:4200";
 
 	// Main message of the email
 	// TODO: Priority buttons to select priority of issue
 	const message = `
-    Dear Owner,<br><br>
-
-    This is a ticket request from ${tenantName} regarding an issue at the property located at ${address}.<br><br>
-
-    Issue Type: ${issueType}<br>
-    Issue Description: ${issueDesc}<br>
-    Issue Priority: ${issuePriority || "Not specified"}<br><br>
-
-    Here is the proposed solution: ${solution}<br>
-
-
-    Please review the ticket and schedule a worker accordingly.<br><br>
- 
-    Thank you.<br><br>
-
-    Sincerely,<br>EzProperty
+    <div style="font-family: Arial, sans-serif; max-width: 600px;">
+    <p style="font-size: 16px;">Dear Owner,</p>
+    <p style="font-size: 16px;">This is a ticket request from ${tenantName} regarding an issue at the property located at ${address}.</p>
+    
+    <p style="font-size: 16px;">Issue Type: ${issueType}</p>
+    <p style="font-size: 16px;">Issue Description: ${issueDesc}</p>
+    <p style="font-size: 16px;">Issue Priority: ${issuePriority || "Not specified"}</p>
+    
+    <p style="font-size: 16px;">Here is the proposed solution: ${solution}</p>
+    
+    <p style="font-size: 16px;">Please select the priority of the issue:</p>
+    
+    <div style="margin-bottom: 20px;">
+        <a href="${origin}/low" style="background-color: #ffff00; color: #000000; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-right: 10px;">Low Priority</a>
+        <a href="${origin}/medium" style="background-color: #ffa500; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-right: 10px;">Medium Priority</a>
+        <a href="${origin}/high" style="background-color: #ff0000; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-right: 10px;">High Priority</a>
+        <a href="${origin}/urgent" style="background-color: #ff0000; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Urgent Priority</a>
+    </div>
+    
+    <p style="font-size: 16px;">A worker will be sent to the premise as soon as possible.</p>
+    
+    <p style="font-size: 16px;">Thank you.</p>
+    
+    <p style="font-size: 16px;">Sincerely,<br>EzProperty Team</p>
+</div>
     `;
 
 	// send the email
+	await sendEmail({ to, subject, html: message });
 
 	// send success
+	good({ res, data: "Email sucecssfully sent to owner" });
 };
 
 // TODO: Email the woker once they were assigned to a ticket
