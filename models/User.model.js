@@ -87,6 +87,18 @@ const UserSchema = new Schema({
 	endShift: {
 		type: Number,
 		default: "17:00"
+	},
+	managedWorkers: {
+		type: [Types.ObjectId],
+		ref: "User"
+	},
+	managedTenants: {
+		type: [Types.ObjectId],
+		ref: "User"
+	},
+	managedProperties: {
+		type: [Types.ObjectId],
+		ref: "Property"
 	}
 });
 
