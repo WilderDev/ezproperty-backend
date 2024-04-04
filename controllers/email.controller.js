@@ -1,14 +1,18 @@
 // * IMPORTS * //
-const { sendEmail } = require("../emails/nodemailer");
+const { sendEmail } = require("../lib/emails/nodemailer");
 
-// * EMAILS * //
+// * CONTROLLERS * //
 // TODO: Email the owner once a tenant has made a ticket request, so he can schedule a worker and a time
-const assignWorkerEmail = async (tenantName, issueType, issueDesc, issuePriority, address) => {
+const emailOwnerOnTenantTicketRequest = async (req, res) => {
+	// Get the information from the req body
+	const { tenantName, issueType, issueDesc, issuePriority, address } = req.body;
+
 	// AI solution
 	const solution = ""; // TODO: AI SOLUTION
 
 	// Subject of the email
 	const subject = "Ticket Request: Worker Assignment Needed";
+
 	// Main message of the email
 	// TODO: Priority buttons to select priority of issue
 	const message = `
@@ -32,12 +36,15 @@ const assignWorkerEmail = async (tenantName, issueType, issueDesc, issuePriority
 };
 
 // TODO: Email the woker once they were assigned to a ticket
-// Will need to take in (tenantName, issueType, issueDesc, img?, issuePirority?, address, solution, time)
+// Will need to take in (tenantName, issueType, issueDesc, issuePirority?, address, solution, time)
+const emailWorkerOnTicketAssignment = async (req, res) => {};
 
 // TODO: Email the tenant once a worker was assigned to a ticket
 // Will need to take in (worker, time, solution)
+const emailTenantOnWorkerAssignment = async (req, res) => {};
 
 // TODO: Send a post form at the time of the ticket to the worker (if it needs to be blocked or completed)
+const sendPostFormToWorkerOnTicket = async (req, res) => {};
 // Send form with two buttons, Completed or blocked
 
 // If completed then procceed with completed emails
@@ -47,6 +54,7 @@ const assignWorkerEmail = async (tenantName, issueType, issueDesc, issuePriority
 // ! BLOCKED ! //
 // TODO: if the ticket is blocked, then send an email to the owner on why it was blocked and have him decide the reschedule
 // Will need to take in (tenantName, issueType, issueDesc, img?, issuePirority?, address)
+const notifyOwnerOnBlockedTicket = async (req, res) => {};
 
 // ? Allow owner to change the issue priority
 
@@ -55,16 +63,26 @@ const assignWorkerEmail = async (tenantName, issueType, issueDesc, issuePriority
 // ! BLOCKED ! //
 // TODO: if the ticket is blocked, then send a email to the tenant on why and the estament to when it can be fixed
 // Will need to take in (why, when)
+const notifyTenantOnBlockedTicket = async (req, res) => {};
 
 // * COMPLETED * //
 // TODO: if the ticket is completed, then send an email to the owner that it was successfully completed
 // Will need to take in (tenantName, issueType, issueDesc, img?, issuePirority?, address, review)
+const notifyOwnerOnTicketCompletion = async (req, res) => {};
 
 // * COMPLETED * //
 // TODO: if the ticket is completed, then send an email to the tenant and give them a review form for the fix
 // Send the tenant an email with a link to a specified review for the fix
+const notifyTenantOnTicketCompletion = async (req, res) => {};
 
 // * EXPORTS * //
 module.exports = {
-	assignWorkerEmail
+	emailWorkerOnTicketAssignment,
+	emailTenantOnWorkerAssignment,
+	notifyOwnerOnBlockedTicket,
+	notifyTenantOnBlockedTicket,
+	sendPostFormToWorkerOnTicket,
+	notifyOwnerOnTicketCompletion,
+	notifyTenantOnTicketCompletion,
+	emailOwnerOnTenantTicketRequest
 };

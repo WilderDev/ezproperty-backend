@@ -37,6 +37,9 @@ app.use(xss()); // XSS
 // * ROUTES
 app.use("/api/v1/auth", require("./routes/auth.routes"));
 
+// Email Routes
+app.use("/api/v1/email", require("./routes/email.routes"));
+
 // * START SERVER & DB
 (async () => {
 	try {
