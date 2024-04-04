@@ -267,7 +267,12 @@ const me = async (req, res) => {
 		return bad({ res, status: 401, message: "User not found" });
 	}
 
-	return good({ res, data: { user } }); // Send a 200 response with the user
+	return good({
+		res,
+		data: {
+			user: { id: user._id, email: user.email, username: user.username, role: user.role }
+		}
+	}); // Send a 200 response with the user
 };
 
 // * EXPORTS
