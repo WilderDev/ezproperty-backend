@@ -12,7 +12,7 @@ const {
 // * ROUTES
 router.post("/new-user", createUserAsTenant);
 router.post("/make-tenant/:userId", grantTenant);
-router.post("/remove-tenant/:userId", revokeTenant);
+router.delete("/remove-tenant/:userId", revokeTenant);
 router.get("/get-tenant/:userId", getTenantById);
 router.get("/get-all-tenants", getAllTenants);
 router.post("/get-tenant-by-property", getTenantByPropertyId);
