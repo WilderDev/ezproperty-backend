@@ -26,24 +26,13 @@ const UserSchema = new Schema({
 	},
 	role: {
 		type: String,
-<<<<<<< HEAD
-		enum: ["MANAGER", "STAFF", "TENANT"],
-		default: "TENANT"
-=======
 		enum: ["MANAGER", "WORKER", "TENANT"],
 		required: true
->>>>>>> staging
 	},
 	verificationToken: String,
 	isVerified: {
 		type: Boolean,
 		default: false
-	},
-	isWorker: {
-
-	},
-	isTenant: {
-
 	},
 	verified: Date,
 	passwordToken: {
@@ -73,13 +62,10 @@ const UserSchema = new Schema({
 		],
 		required: true
 	},
-<<<<<<< HEAD
-=======
 	propertyId: {
 		type: Types.ObjectId,
 		ref: "Property"
 	},
->>>>>>> staging
 	emergencyContact: {
 		type: {
 			firstName: { type: String, required: true },
@@ -90,20 +76,6 @@ const UserSchema = new Schema({
 	},
 	workSpecialization: {
 		type: String,
-<<<<<<< HEAD
-		enum: [""],
-	},
-	workSchedule: {
-		{
-			1: [],
-			2: [],
-			3: [],
-			4: [],
-			5: [],
-			6: [],
-			7: []
-		}
-=======
 		enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL"]
 	},
 	workSchedule: {
@@ -129,37 +101,8 @@ const UserSchema = new Schema({
 	managedProperties: {
 		type: [Types.ObjectId],
 		ref: "Property"
->>>>>>> staging
 	}
-
 });
-
-
-const now = new Date(Date.now())
-const today = now.setUTCHours(0,0,0,0)
-function generateNextDay(date) {
-	const day = 1000 * 60 * 60 * 24;
-	const tomorrow = new Date(date + day)
-	console.log(date)
-	console.log(tomorrow.getTime());
-	return tomorrow;
-}
-
-function generateNext7Days(date) {
-	
-	
-	
-	
-}
-
-
-
-
-
-
-
-
-
 
 // * MIDDLEWARE
 // Hash password before saving
