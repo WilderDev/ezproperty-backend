@@ -12,13 +12,14 @@ const TicketSchema = new Schema({
 	priorityLevel: {
 		type: String,
 		enum: ["HIGH", "MEDIUM", "LOW"],
-		required: true
+		required: true,
+		default: "MEDIUM"
 	},
-	type: {
+	type: [{
 		type: String,
 		enum: ["Plumbing", "Electrical", "Structural", "HVAC", "General", "Pest", "Other"],
 		required: true
-	},
+	}],
 	description: {
 		type: String,
 		required: true,
