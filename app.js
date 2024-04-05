@@ -35,6 +35,7 @@ app.use(xss()); // XSS
 // * ROUTES
 app.use("/api/v1/auth", require("./routes/auth.routes"));
 app.use("/api/v1/workers", require("./routes/worker.routes"));
+app.use("/api/v1/tickets", require("./routes/ticket.routes"));
 
 // * START SERVER & DB
 (async () => {
