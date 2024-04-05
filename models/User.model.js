@@ -25,7 +25,7 @@ const UserSchema = new Schema({
 		minlength: 6
 	},
 	role: {
-		type: [String],
+		type: String,
 		enum: ["MANAGER", "WORKER", "TENANT"],
 		required: true
 	},
@@ -62,6 +62,10 @@ const UserSchema = new Schema({
 		],
 		required: true
 	},
+	propertyId: {
+		type: Types.ObjectId,
+		ref: "Property"
+	},
 	emergencyContact: {
 		type: {
 			firstName: { type: String, required: true },
@@ -71,20 +75,32 @@ const UserSchema = new Schema({
 		}
 	},
 	workSpecialization: {
-		type: [String],
-		enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL MAINTENANCE"]
+		type: String,
+		enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL"]
 	},
 	workSchedule: {
 		type: Types.ObjectId,
 		ref: "Schedule"
 	},
 	startShift: {
-		type: Number,
+		type: String,
 		default: "08:00"
 	},
 	endShift: {
-		type: Number,
+		type: String,
 		default: "17:00"
+	},
+	managedWorkers: {
+		type: [Types.ObjectId],
+		ref: "User"
+	},
+	managedTenants: {
+		type: [Types.ObjectId],
+		ref: "User"
+	},
+	managedProperties: {
+		type: [Types.ObjectId],
+		ref: "Property"
 	}
 });
 
