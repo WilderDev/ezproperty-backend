@@ -1,13 +1,10 @@
 const { Schema, model, Types } = require("mongoose");
 
 const TicketSchema = new Schema({
-    ticketID: {
-        type: String
-    },
 	propertyId: {
 		type: Types.ObjectId,
 		ref: "Property",
-		// required: true
+		required: true
 	},
 	priorityLevel: {
 		type: String,
@@ -32,7 +29,7 @@ const TicketSchema = new Schema({
 	assignedWorker: {
 		type: Types.ObjectId,
 		ref: "User",
-        default: "None Assigned"
+		default: "None Assigned"
 	}
 });
 
