@@ -12,6 +12,11 @@ const emailOwnerOnTenantTicketRequest = async (req, res) => {
 		return bad({ res, message: "Not all needed information was provided" });
 	}
 
+	// TODO: Get the tenant from the middleware
+	const tenantName = "";
+
+	// TODO: GET THE ID AFTER CREATION OF THE TICKET
+
 	// AI solution
 	const solution = ""; // TODO: AI SOLUTION
 
