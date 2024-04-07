@@ -6,9 +6,9 @@ const { good, bad } = require("../lib/utils/res");
 // Email the owner once a tenant has made a ticket request, so he can schedule a worker and a time
 const emailOwnerOnTenantTicketRequest = async (req, res) => {
 	// Get the information from the req body
-	const { tenantName, issueType, issueDesc, issuePriority, address } = req.body;
+	const { issueType, issueDesc, issuePriority, address } = req.body;
 
-	if (!tenantName || !issueType || !issueDesc || !issuePriority || !address) {
+	if (!issueType || !issueDesc || !issuePriority || !address) {
 		return bad({ res, message: "Not all needed information was provided" });
 	}
 
