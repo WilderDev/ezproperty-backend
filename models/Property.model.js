@@ -6,7 +6,6 @@ const PropertySchema = new Schema({
 		aptNumber: { type: String, required: true },
 		state: { type: String, required: true },
 		zipCode: { type: Number, required: true },
-		required: true
 	},
 	aptNumber: {
 		type: String,

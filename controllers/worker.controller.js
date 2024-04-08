@@ -1,5 +1,5 @@
 //* IMPORTS
-const User = require("../models/user.model");
+const User = require("../models/User.model");
 const { good, bad } = require("../lib/utils/res");
 
 // * CONTROLLERS
