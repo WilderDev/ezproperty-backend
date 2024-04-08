@@ -9,7 +9,7 @@ const { good, bad } = require("../lib/utils/res");
 // * CONTROLLERS
 // CONTROLLER: Register User
 const registerUser = async (req, res) => {
-	const { email, password1, password2, username } = req.body; // Destructure the email, password, and username from the request body
+	const { email, password, username } = req.body; // Destructure the email, password, and username from the request body
 
 	const emailAlreadyExists = await User.findOne({ email }); // Check if the email is already taken
 
@@ -31,25 +31,20 @@ const registerUser = async (req, res) => {
 	const verificationToken = crypto.randomBytes(2 ** 8).toString("hex"); // Generate a verification token
 
 	// If the email, password, or username is missing, send a 400 response
-	if (!email || !password1 || !password2 || !username) {
+	if (!email || !password || !username) {
 		return bad({ res, message: "Invalid Fields" });
-	}
-
-	// If the passwords don't match, send a 400 response
-	if (password1 !== password2) {
-		return bad({ res, message: "Passwords do not match" });
 	}
 
 	// Create a new user
 	const user = await User.create({
 		email,
-		password: password1,
+		password,
 		username,
 		role,
 		verificationToken
 	});
 
-	let serverUrlString = process.env.SERVER_URL; // TODO: Set this to the server URL depending on the environment
+	let serverUrlString = "http://localhost:4200/"; // TODO: Set this to the server URL depending on the environment
 
 	// Send a verification email
 	await sendVerificationEmail({
@@ -215,12 +210,12 @@ const verifyEmail = async (req, res) => {
 
 	// If the user doesn't exist, send a 401 response
 	if (!user) {
-		return bad({ res, status: 401, message: "Verification failed" });
+		return bad({ res, status: 400, message: "Verification failed" });
 	}
 
 	// If the user is already verified, send a 401 response
 	if (user.verificationToken !== verificationToken) {
-		return bad({ res, status: 401, message: "Verification failed" });
+		return bad({ res, status: 400, message: "Verification failed" });
 	}
 
 	user.isVerified = true; // Set the user to verified

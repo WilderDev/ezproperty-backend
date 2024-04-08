@@ -1,7 +1,5 @@
 // * IMPORTS
 require("dotenv").config();
-require("express-async-errors");
-
 const express = require("express");
 const app = express();
 
@@ -36,16 +34,19 @@ app.use(xss()); // XSS
 
 // * ROUTES
 app.use("/api/v1/auth", require("./routes/auth.routes"));
-
-// * START SERVER & DB
+app.use("/api/v1/tenants", require("./routes/tenant.routes"));
+app.use("/api/v1/workers", require("./routes/worker.routes"));
+app.use("/api/v1/tickets",	require("./routes/ticket.routes"));
+	// * START SERVER & DB
 (async () => {
-	try {
-		await connectToMongo(process.env.MONGODB_URI); // 1. Start Database
+		try {
+			await connectToMongo(process.env.MONGODB_URI); // 1. Start Database
 
-		app.listen(process.env.PORT, () =>
-			console.log(`Backend Listening @ ${process.env.SERVER_URL}`)
-		); // 2. Start Backend Server
-	} catch (err) {
-		console.log("ERROR:", err);
+			app.listen(process.env.PORT, () =>
+				console.log(`Backend Listening @ ${process.env.SERVER_URL}`)
+			); // 2. Start Backend Server
+		} catch (err) {
+			console.log("ERROR:", err);
+		}
 	}
-})();
+)();
