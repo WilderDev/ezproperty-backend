@@ -270,6 +270,28 @@ const me = async (req, res) => {
 	}); // Send a 200 response with the user
 };
 
+// CONTROLLER: Delete User
+const deleteUser = async (req, res) => {
+	// get the user id
+	const { id } = req.params;
+
+	// if no id the return bad
+	if (!id) {
+		return bad({ res, status: 400, message: "No user id provided" });
+	}
+
+	// if no user found then return error
+	if (!User.findOne({ _id: id })) {
+		return bad({ res, status: 400, message: "User not found" });
+	}
+
+	// find the user by id and delete it from the database
+	const deletedUser = await User.findOneAndDelete({ _id: id }); // Find the user by id
+
+	// return the deleted user
+	return good({ res, data: { user: deletedUser } }); // Send a 200 response
+};
+
 // * EXPORTS
 module.exports = {
 	registerUser,
@@ -279,5 +301,6 @@ module.exports = {
 	resetPass,
 	verifyEmail,
 	resendVerification,
-	me
+	me,
+	deleteUser
 };
