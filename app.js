@@ -2,12 +2,9 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-require("express-async-errors");
-
 
 const connectToMongo = require("./lib/db/mongoose-connect");
 
-const ticketRoutes = require('./routes/ticket.routes')
 // SECURITY
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
@@ -37,7 +34,10 @@ app.use(xss()); // XSS
 
 // * ROUTES
 app.use("/api/v1/auth", require("./routes/auth.routes"));
-app.use('/api/v1/tickets', ticketRoutes);
+app.use("/api/v1/workers", require("./routes/worker.routes"));
+app.use("/api/v1/tenants", require("./routes/tenant.routes"));
+app.use("api/v1/properties", require("./routes/property.routes"))
+app.use("/api/v1/tickets", require("./routes/ticket.routes"));
 
 // Email Routes
 app.use("/api/v1/email", require("./routes/email.routes"));
