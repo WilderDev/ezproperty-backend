@@ -74,10 +74,10 @@ const UserSchema = new Schema({
 			phoneNumber: { type: String, required: true }
 		}
 	},
-	workSpecialization: {
+	workSpecialization: [{
 		type: String,
 		enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL"]
-	},
+	}],
 	workSchedule: {
 		type: Types.ObjectId,
 		ref: "Schedule"
@@ -101,6 +101,10 @@ const UserSchema = new Schema({
 	managedProperties: {
 		type: [Types.ObjectId],
 		ref: "Property"
+	},
+	manager: {
+		type: Types.ObjectId,
+		ref: "User"
 	}
 });
 
