@@ -46,16 +46,16 @@ const registerUser = async (req, res) => {
 		verificationToken
 	});
 
-	// let serverUrlString = "http://localhost:4200/";
+	let serverUrlString = "http://localhost:4200/";
 	 // TODO: Set this to the server URL depending on the environment
 
 	// Send a verification email
-	// await sendVerificationEmail({
-	// 	username: user.username,
-	// 	email: user.email,
-	// 	verificationToken: user.verificationToken,
-	// 	url: serverUrlString
-	// });
+	await sendVerificationEmail({
+		username: user.username,
+		email: user.email,
+		verificationToken: user.verificationToken,
+		url: serverUrlString
+	});
 
 	return good({ res, data: { user } }); // Send a 200 response with the user
 };
