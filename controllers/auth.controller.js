@@ -9,7 +9,9 @@ const { good, bad } = require("../lib/utils/res");
 // * CONTROLLERS
 // CONTROLLER: Register User
 const registerUser = async (req, res) => {
-	const { email, password, username } = req.body; // Destructure the email, password, and username from the request body
+	const { username, email, password, role } = req.body; // Destructure the email, password, and username from the request body
+
+	console.log(email, password, username, role);
 
 	const emailAlreadyExists = await User.findOne({ email }); // Check if the email is already taken
 
@@ -25,8 +27,8 @@ const registerUser = async (req, res) => {
 		return bad({ res, message: "Invalid username or email" });
 	}
 
-	const isFirstUser = (await User.countDocuments({})) === 0; // Check if the user is the first user
-	const role = isFirstUser ? "manager" : "tenant"; // If the user is the first user, set the role to "manager", otherwise set it to "tenant"
+	// const isFirstUser = (await User.countDocuments({})) === 0; // Check if the user is the first user
+	// const role = isFirstUser ? "ADMIN" : "USER"; // If the user is the first user, set the role to "admin", otherwise set it to "user"
 
 	const verificationToken = crypto.randomBytes(2 ** 8).toString("hex"); // Generate a verification token
 
@@ -37,22 +39,23 @@ const registerUser = async (req, res) => {
 
 	// Create a new user
 	const user = await User.create({
+		username,
 		email,
 		password,
-		username,
 		role,
 		verificationToken
 	});
 
-	let serverUrlString = "http://localhost:4200/"; // TODO: Set this to the server URL depending on the environment
+	// let serverUrlString = "http://localhost:4200/";
+	// TODO: Set this to the server URL depending on the environment
 
 	// Send a verification email
-	await sendVerificationEmail({
-		username: user.username,
-		email: user.email,
-		verificationToken: user.verificationToken,
-		url: serverUrlString
-	});
+	// await sendVerificationEmail({
+	// 	username: user.username,
+	// 	email: user.email,
+	// 	verificationToken: user.verificationToken,
+	// 	url: serverUrlString
+	// });
 
 	return good({ res, data: { user } }); // Send a 200 response with the user
 };
@@ -292,6 +295,12 @@ const deleteUser = async (req, res) => {
 	return good({ res, data: { user: deletedUser } }); // Send a 200 response
 };
 
+const getAllUsers = async (req, res) => {
+	const users = await User.find({});
+
+	res.status(200).json({ success: true, data: { users } });
+};
+
 // * EXPORTS
 module.exports = {
 	registerUser,
@@ -302,5 +311,6 @@ module.exports = {
 	verifyEmail,
 	resendVerification,
 	me,
-	deleteUser
+	deleteUser,
+	getAllUsers
 };

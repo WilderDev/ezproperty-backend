@@ -9,7 +9,8 @@ const {
 	forgotPass,
 	resendVerification,
 	me,
-	deleteUser
+	deleteUser,
+	getAllUsers
 } = require("../controllers/auth.controller");
 const { authenticateUser } = require("../middleware/auth.middleware");
 
@@ -23,6 +24,6 @@ router.post("/reset-password", resetPass); // Reset password
 router.post("/forgot-password", forgotPass); // Forgot password
 router.get("/me", authenticateUser, me); // Get user details
 router.delete("/delete-user/:id", deleteUser); // Delete user
-
+router.get("/getall", getAllUsers)
 // * EXPORTS
 module.exports = router;
