@@ -5,6 +5,12 @@ const { good, bad } = require("../lib/utils/res");
 // * CONTROLLERS
 // create new user as worker
 const createUserAsWorker = async (req, res) => {
+
+	const currentDate = new Date().toISOString();
+
+	const schedule =await user.genSchedule(currentDate);
+
+
 	const {
 		username,
 		email,
@@ -34,10 +40,18 @@ const createUserAsWorker = async (req, res) => {
 			relationship: emergencyContactRelastionship,
 			phoneNumber: emergencyContactPhoneNumber
 		},
-		workSpecialization
+		workSpecialization,
+		workSchedule: `${{schedule}}`
 	}); // create new user
+
+
 	await user.save(); // save user
+
+
+
+
 	return good({ res, status: 201, data: user }); // return 201 and user data
+	
 };
 // grants worker role to a user
 const grantWorker = async (req, res) => {
