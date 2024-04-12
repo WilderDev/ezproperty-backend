@@ -28,8 +28,7 @@ const TicketSchema = new Schema({
 	},
 	assignedWorker: {
 		type: Types.ObjectId,
-		ref: "User",
-		default: "None Assigned"
+		ref: "User"
 	}
 });
 

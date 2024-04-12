@@ -1,21 +1,55 @@
 const Ticket = require("../models/Ticket.model");
 const User = require("../models/User.model");
 const Schedule = require("../models/Schedule.model");
+const Property = require("../models/Property.model");
 const { good, bad } = require("../lib/utils/res");
 const { genAvailableWorkersSchedule } = require("../lib/utils/scheduler");
 
 const createTicket = async (req, res) => {
+	const { propertyId, priorityLevel, type, description, progress } = req.body;
+	if (!propertyId) {
+		bad({ res, status: 400, message: "Property ID is required" });
+	}
+	const foundProperty = await Property.findOne({ _id: propertyId });
+	if (!foundProperty) {
+		bad({ res, status: 404, message: `No property found with id: ${propertyId}` });
+	}
+	if (!priorityLevel) {
+		bad({ res, status: 400, message: "Priority level is required" });
+	}
+	if (priorityLevel !== "HIGH" && priorityLevel !== "MEDIUM" && priorityLevel !== "LOW") {
+		bad({ res, status: 400, message: "Priority level must be HIGH, MEDIUM, or LOW" });
+	}
+	if (!type) {
+		bad({ res, status: 400, message: "Type is required" });
+	}
+	if (type !== "Plumbing" && type !== "Electrical" && type !== "Structural" && type !== "HVAC" && type !== "General" && type !== "Pest" && type !== "Other") {
+		bad({ res, status: 400, message: "Type must be Plumbing, Electrical, Structural, HVAC, General, Pest, or Other" });
+	}
+	if (!description) {
+		bad({ res, status: 400, message: "Description is required" });
+	}
+	if (description.length > 1024) {
+		bad({ res, status: 400, message: "Description must be less than 1024 characters" });
+	}
+	if (!progress) {
+		bad({ res, status: 400, message: "Progress is required" });
+	}
+	if (progress !== "Backlog" && progress !== "In-Progress" && progress !== "Blockage" && progress !== "Completed") {
+		bad({ res, status: 400, message: "Progress must be Backlog, In-Progress, Blockage, or Completed" });
+	}
 	const ticket = await Ticket.create(req.body);
 	good({ res, status: 201, data: ticket });
 };
 const deleteTicket = async (req, res) => {
 	const { id: ticketId } = req.params;
+	if (!ticketId) {
+		bad({ res, status: 400, message: "Ticket ID is required" });
+	}
 	const ticket = await Ticket.findByIdAndDelete({ _id: ticketId });
-
 	if (!ticket) {
 		bad({ res, status: 404, message: `No ticket found with id: ${ticketId}` });
 	}
-
 	good({ res, status: 200, data: ticket });
 };
 const updateTicket = async (req, res) => {
@@ -68,7 +102,7 @@ const assignWorkerAuto = async (req, res) => {
 		for (let [worker, startTimes] of workerStartTimes) {
 			// loop through workers and their start times
 			let [day, timeslots] = startTimes; // destructure day and timeslot
-			for (let timeslot of timeslots) {
+			for (let timeslot in timeslots) {
 				// loop through timeslots
 				if (timeslot >= currentTime) {
 					// if timeslot is greater than or equal to current time
