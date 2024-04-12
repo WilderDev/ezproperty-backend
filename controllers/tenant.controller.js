@@ -18,7 +18,6 @@ const createUserAsTenant = async (req, res) => {
 		emergencyContactRelationship,
 		emergencyContactPhoneNumber
 	} = req.body;
-	console.log(propertyId);
 	const user = new User({
 		username,
 		email,
@@ -37,11 +36,11 @@ const createUserAsTenant = async (req, res) => {
 			phoneNumber: emergencyContactPhoneNumber
 		}
 	});
-	// const foundPropertyId = await Property.findOne({ _id: propertyId }); // find property by id
-	// if (!foundPropertyId) {
-	// 	// check if property exists
-	// 	return bad({ res, status: 404, message: "Property not found" }); // return 404 if property not found
-	// }
+	const foundPropertyId = await Property.findOne({ _id: propertyId }); // find property by id
+	if (!foundPropertyId) {
+		// check if property exists
+		return bad({ res, status: 404, message: "Property not found" }); // return 404 if property not found
+	}
 	await user.save(); // save user
 	return good({ res, status: 201, data: user }); // return 201 and user data
 };
