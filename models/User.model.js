@@ -43,16 +43,15 @@ const UserSchema = new Schema({
 	},
 	firstName: {
 		type: String,
-		required: true
+		
 	},
 	middleInitial: {
 		type: String,
-		required: true,
 		maxLength: 1
 	},
 	lastName: {
 		type: String,
-		required: true
+		
 	},
 	phoneNumber: {
 		type: String,
@@ -60,7 +59,7 @@ const UserSchema = new Schema({
 			/^(?:\+?1)?(?:\s|-)?\(?\d{3}\)?(?:\s|-)?\d{3}(?:\s|-)?\d{4}$/,
 			"please use a valid phone number"
 		],
-		required: true
+		
 	},
 	propertyId: {
 		type: Types.ObjectId,
@@ -68,16 +67,16 @@ const UserSchema = new Schema({
 	},
 	emergencyContact: {
 		type: {
-			firstName: { type: String, required: true },
-			lastName: { type: String, required: true },
-			relationship: { type: String, required: true },
-			phoneNumber: { type: String, required: true }
+			firstName: { type: String },
+			lastName: { type: String },
+			relationship: { type: String },
+			phoneNumber: { type: String }
 		}
 	},
-	workSpecialization: {
+	workSpecialization: [{
 		type: String,
 		enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL"]
-	},
+	}],
 	workSchedule: {
 		type: Types.ObjectId,
 		ref: "Schedule"
@@ -101,6 +100,10 @@ const UserSchema = new Schema({
 	managedProperties: {
 		type: [Types.ObjectId],
 		ref: "Property"
+	},
+	manager: {
+		type: Types.ObjectId,
+		ref: "User"
 	}
 });
 
