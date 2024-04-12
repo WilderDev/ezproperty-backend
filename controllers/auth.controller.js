@@ -42,7 +42,7 @@ const registerUser = async (req, res) => {
 		username,
 		email,
 		password,
-		role,
+		role: "MANAGER",
 		verificationToken
 	});
 

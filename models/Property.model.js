@@ -4,11 +4,12 @@ const PropertySchema = new Schema({
 	streetAddress: { type: String, required: true },
 	aptNumber: { type: String, required: true },
 	city: {
-		type: String, required: true
+		type: String,
+		required: true
 	},
 	state: { type: String, required: true },
-	zipCode: { type: Number, required: true },
-	
+	zipCode: { type: String, required: true },
+
 	currentTenant: {
 		type: Types.ObjectId,
 		ref: "User"

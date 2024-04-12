@@ -26,8 +26,9 @@ const createUserAsWorker = async (req, res) => {
 		firstName,
 		middleInitial,
 		lastName,
-		role: ["WORKER"],
+		role: "WORKER",
 		phoneNumber,
+		manager: req.user.userId,
 		emergencyContact: {
 			firstName: emergencyContactFirstName,
 			lastName: emergencyContactLastName,
