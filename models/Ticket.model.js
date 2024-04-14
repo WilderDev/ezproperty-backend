@@ -1,13 +1,13 @@
 const { Schema, model, Types } = require("mongoose");
 
 const TicketSchema = new Schema({
-	ticketID: {
-		type: String
-	},
 	propertyId: {
 		type: Types.ObjectId,
 		ref: "Property"
 		// required: true
+	},
+	solution: {
+		type: String
 	},
 	priorityLevel: {
 		type: String,
@@ -15,11 +15,13 @@ const TicketSchema = new Schema({
 		required: true,
 		default: "MEDIUM"
 	},
-	type: [{
-		type: String,
-		enum: ["Plumbing", "Electrical", "Structural", "HVAC", "General", "Pest", "Other"],
-		required: true
-	}],
+	type: [
+		{
+			type: String,
+			enum: ["Plumbing", "Electrical", "Structural", "HVAC", "General", "Pest", "Other"],
+			required: true
+		}
+	],
 	description: {
 		type: String,
 		required: true,
@@ -28,12 +30,23 @@ const TicketSchema = new Schema({
 	progress: {
 		type: String,
 		enum: ["Backlog", "In-Progress", "Blockage", "Completed"],
+		default: "Backlog",
 		required: true
 	},
 	assignedWorker: {
 		type: Types.ObjectId,
 		ref: "User",
 		default: "None Assigned"
+	},
+	manager: {
+		type: Types.ObjectId,
+		ref: "User",
+		required: true
+	},
+	tenantId: {
+		type: Types.ObjectId,
+		ref: "User",
+		required: true
 	}
 });
 

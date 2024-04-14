@@ -27,7 +27,6 @@ async function authenticateUser(req, res, next) {
 			user: payload.user.userId,
 			refreshToken: payload.refreshToken
 		});
-
 		// If the token doesn't exist or isn't valid, send a 401 response
 		if (!existingToken || !existingToken?.isValid) {
 			return bad({ res, status: 401, message: "Unauthorized" });
