@@ -11,12 +11,12 @@ const { good, bad } = require("../lib/utils/res");
 const registerUser = async (req, res) => {
 	const { username, email, password, role } = req.body; // Destructure the email, password, and username from the request body
 
-	console.log(email, password, username, role)
+	console.log(email, password, username, role);
 
-	const emailTaken = await User.findOne({ email }); // Check if the email is already taken
+	const emailAlreadyExists = await User.findOne({ email }); // Check if the email is already taken
 
 	// If the email is already taken, send a 400 response
-	if (emailTaken) {
+	if (emailAlreadyExists) {
 		return bad({ res, message: "Invalid username or email" });
 	}
 
@@ -42,12 +42,12 @@ const registerUser = async (req, res) => {
 		username,
 		email,
 		password,
-		role,
+		role: "MANAGER",
 		verificationToken
 	});
 
 	let serverUrlString = "http://localhost:4200/";
-	 // TODO: Set this to the server URL depending on the environment
+	// TODO: Set this to the server URL depending on the environment
 
 	// Send a verification email
 	await sendVerificationEmail({
@@ -296,10 +296,10 @@ const deleteUser = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
-		const users = await User.find({});
-	
-		res.status(200).json({ success: true, data: { users } });
-	}
+	const users = await User.find({});
+
+	res.status(200).json({ success: true, data: { users } });
+};
 
 // * EXPORTS
 module.exports = {

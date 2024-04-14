@@ -8,20 +8,20 @@ const jwt = require("jsonwebtoken");
 const UserSchema = new Schema({
 	username: {
 		type: String,
-		required: true,
+		required: [true, "Please provide username"],
 		minlength: 4,
 		maxlength: 32,
 		unique: true
 	},
 	email: {
 		type: String,
-		required: true,
-		match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, "please use a valid email address"],
-		unique: true
+		unique: true,
+		required: [true, "please use email address"],
+		match: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/
 	},
 	password: {
 		type: String,
-		required: [true, "please provide a password"],
+		required: [true, "please provide password"],
 		minlength: 6
 	},
 	role: {
@@ -111,8 +111,8 @@ UserSchema.pre("save", async function () {
 
 // * METHODS
 // Compare password with hashed password
-UserSchema.methods.comparePass = async function (candidatePass) {
-	const isMatch = await bcrypt.compare(candidatePass, this.password); // Compare the candidate password with the hashed password
+UserSchema.methods.comparePass = async function (candidatePassword) {
+	const isMatch = await bcrypt.compare(candidatePassword, this.password); // Compare the candidate password with the hashed password
 
 	return isMatch; // Return the result
 };

@@ -25,9 +25,10 @@ const createUserAsTenant = async (req, res) => {
 		firstName,
 		middleInitial,
 		lastName,
-		role: ["TENANT"],
+		role: "TENANT",
 		phoneNumber,
 		propertyId,
+		manager: req.user.userId,
 		emergencyContact: {
 			firstName: emergencyContactFirstName,
 			lastName: emergencyContactLastName,
