@@ -42,33 +42,32 @@ const UserSchema = new Schema({
 		type: Date
 	},
 	firstName: {
-		type: String,
-		
+		type: String
 	},
 	middleInitial: {
 		type: String,
 		maxLength: 1
 	},
 	lastName: {
-		type: String,
-		
+		type: String
 	},
 	phoneNumber: {
 		type: String,
 		match: [
 			/^(?:\+?1)?(?:\s|-)?\(?\d{3}\)?(?:\s|-)?\d{3}(?:\s|-)?\d{4}$/,
 			"please use a valid phone number"
-		],
-		
+		]
 	},
 	propertyId: {
 		type: Types.ObjectId,
 		ref: "Property"
 	},
-	workSpecialization: [{
-		type: String,
-		enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL"]
-	}],
+	workSpecialization: [
+		{
+			type: String,
+			enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL"]
+		}
+	],
 	workSchedule: {
 		type: Types.ObjectId,
 		ref: "Schedule"
