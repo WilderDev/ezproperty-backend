@@ -65,14 +65,6 @@ const UserSchema = new Schema({
 		type: Types.ObjectId,
 		ref: "Property"
 	},
-	emergencyContact: {
-		type: {
-			firstName: { type: String },
-			lastName: { type: String },
-			relationship: { type: String },
-			phoneNumber: { type: String }
-		}
-	},
 	workSpecialization: [{
 		type: String,
 		enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL"]
