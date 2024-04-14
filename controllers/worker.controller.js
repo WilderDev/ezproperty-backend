@@ -5,11 +5,6 @@ const { good, bad } = require("../lib/utils/res");
 // * CONTROLLERS
 // create new user as worker
 const createUserAsWorker = async (req, res) => {
-	// TODO: SCHEDULE
-	// const currentDate = new Date().toISOString();
-
-	// const schedule = await user.genSchedule(currentDate);
-
 	const {
 		username,
 		email,
@@ -32,10 +27,15 @@ const createUserAsWorker = async (req, res) => {
 		phoneNumber,
 		manager: req.user.userId,
 		workSpecialization
-		// workSchedule: `${{ schedule }}`
 	}); // create new user
 
 	await user.save(); // save user
+
+	const currentDate = new Date().toISOString();
+
+	await user.genSchedule(currentDate);
+
+	await user.save();
 
 	return good({ res, status: 201, data: user }); // return 201 and user data
 };
