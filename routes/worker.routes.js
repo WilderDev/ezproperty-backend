@@ -1,5 +1,7 @@
 //* IMPORTS
 const router = require("express").Router();
+const { authenticateUser } = require("../middleware/auth.middleware");
+
 const {
 	createUserAsWorker,
 	grantWorker,
@@ -14,7 +16,7 @@ const {
 } = require("../controllers/worker.controller");
 
 //* ROUTES
-router.post("/new-user", createUserAsWorker);
+router.post("/new-user", authenticateUser, createUserAsWorker);
 router.post("/make-worker/:userId", grantWorker);
 router.delete("/remove-worker/:userId", revokeWorker);
 router.get("/get-worker/:userId", getWorkerById);
