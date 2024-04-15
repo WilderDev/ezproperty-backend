@@ -38,6 +38,7 @@ app.use("/api/v1/workers", require("./routes/worker.routes"));
 app.use("/api/v1/tenants", require("./routes/tenant.routes"));
 app.use("/api/v1/properties", require("./routes/property.routes"));
 app.use("/api/v1/tickets", require("./routes/ticket.routes"));
+app.use("/api/v1/schedules", require("./routes/schedule.routes"));
 
 // * START SERVER & DB
 (async () => {

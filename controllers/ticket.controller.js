@@ -1,8 +1,8 @@
 const Ticket = require("../models/Ticket.model");
 const User = require("../models/User.model");
 const Property = require("../models/Property.model");
-const { good, bad } = require("../utils/response");
-const { genAvailableWorkersSchedule } = require("../utils/workerSchedule");
+const { good, bad } = require("../lib/utils/res");
+const { genAvailableWorkersSchedule } = require("../lib/utils/scheduler");
 
 const createTicket = async (req, res) => {
 	// get the user Id from the req user

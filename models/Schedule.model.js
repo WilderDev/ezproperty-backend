@@ -1,22 +1,12 @@
 const { Schema, model } = require("mongoose");
 
-const TimeslotSchema = new Schema(
-	{
-		ticketId: {
-			type: String
-		}
-	},
-	{ _id: false }
-);
-
 const ScheduleSchema = new Schema({
 	schedule: {
-		type: Map,
-		of: {
-			type: Map,
-			of: TimeslotSchema
-		}
+		type: Schema.Types.Mixed,
+		default: () => ({})
 	}
 });
 
-module.exports = model("Schedule", ScheduleSchema);
+const Schedule = model("Schedule", ScheduleSchema);
+
+module.exports = Schedule;
