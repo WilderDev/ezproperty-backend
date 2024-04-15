@@ -34,6 +34,10 @@ const TicketSchema = new Schema({
 		type: Types.ObjectId,
 		ref: "User",
 		default: "None Assigned"
+	},
+	tenantId: {
+		type: Types.ObjectId,
+		ref: "User"
 	}
 });
 
