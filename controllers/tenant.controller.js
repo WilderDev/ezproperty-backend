@@ -103,7 +103,10 @@ const getTenantById = async (req, res) => {
 
 // get all tenants
 const getAllTenants = async (req, res) => {
-	const tenants = await User.find({ role: "TENANT" }); // find all tenants
+	// get the user id from the req user
+	const userId = req.user.userId;
+
+	const tenants = await User.find({ role: "TENANT", manager: userId }); // find all tenants
 	return good({ res, status: 200, data: tenants }); // return 200 and tenants data
 };
 
