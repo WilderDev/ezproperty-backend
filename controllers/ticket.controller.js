@@ -104,7 +104,10 @@ const getTicket = async (req, res) => {
 };
 
 const getAllTickets = async (req, res) => {
-	const tickets = await Ticket.find({});
+	// get the user id from the req user
+	const userId = req.user.userId;
+
+	const tickets = await Ticket.find({ manager: userId });
 
 	res.status(200).json({ success: true, data: { tickets } });
 };

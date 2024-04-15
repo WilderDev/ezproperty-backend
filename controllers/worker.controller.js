@@ -83,7 +83,10 @@ const getWorkerById = async (req, res) => {
 
 // get all workers
 const getAllWorkers = async (req, res) => {
-	const workers = await User.find({ role: "WORKER" }); // find all users with role WORKER
+	// get the user id from the req user
+	const userId = req.user.userId;
+
+	const workers = await User.find({ role: "WORKER", manager: userId }); // find all users with role WORKER
 	return good({ res, status: 200, data: workers }); // return 200 and workers data
 };
 
