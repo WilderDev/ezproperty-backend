@@ -8,8 +8,7 @@ const PropertySchema = new Schema({
 		required: true
 	},
 	state: { type: String, required: true },
-	zipCode: { type: Number, required: true },
-
+	zipCode: { type: String, required: true },
 	currentTenant: {
 		type: Types.ObjectId,
 		ref: "User"

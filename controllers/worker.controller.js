@@ -13,12 +13,9 @@ const createUserAsWorker = async (req, res) => {
 		middleInitial,
 		lastName,
 		phoneNumber,
-		emergencyContactFirstName,
-		emergencyContactLastName,
-		emergencyContactRelastionship,
-		emergencyContactPhoneNumber,
 		workSpecialization
 	} = req.body; // get user data from body
+
 	const user = new User({
 		username,
 		email,
@@ -26,17 +23,20 @@ const createUserAsWorker = async (req, res) => {
 		firstName,
 		middleInitial,
 		lastName,
-		role: ["WORKER"],
+		role: "WORKER",
 		phoneNumber,
-		emergencyContact: {
-			firstName: emergencyContactFirstName,
-			lastName: emergencyContactLastName,
-			relationship: emergencyContactRelastionship,
-			phoneNumber: emergencyContactPhoneNumber
-		},
+		manager: req.user.userId,
 		workSpecialization
 	}); // create new user
+
 	await user.save(); // save user
+
+	const currentDate = new Date().toISOString();
+
+	await user.genSchedule(currentDate);
+
+	await user.save();
+
 	return good({ res, status: 201, data: user }); // return 201 and user data
 };
 // grants worker role to a user

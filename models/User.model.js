@@ -8,20 +8,20 @@ const jwt = require("jsonwebtoken");
 const UserSchema = new Schema({
 	username: {
 		type: String,
-		required: true,
+		required: [true, "Please provide username"],
 		minlength: 4,
 		maxlength: 32,
 		unique: true
 	},
 	email: {
 		type: String,
-		required: true,
-		match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, "please use a valid email address"],
-		unique: true
+		unique: true,
+		required: [true, "please use email address"],
+		match: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/
 	},
 	password: {
 		type: String,
-		required: [true, "please provide a password"],
+		required: [true, "please provide password"],
 		minlength: 6
 	},
 	role: {
@@ -42,41 +42,32 @@ const UserSchema = new Schema({
 		type: Date
 	},
 	firstName: {
-		type: String,
-		
+		type: String
 	},
 	middleInitial: {
 		type: String,
 		maxLength: 1
 	},
 	lastName: {
-		type: String,
-		
+		type: String
 	},
 	phoneNumber: {
 		type: String,
 		match: [
 			/^(?:\+?1)?(?:\s|-)?\(?\d{3}\)?(?:\s|-)?\d{3}(?:\s|-)?\d{4}$/,
 			"please use a valid phone number"
-		],
-		
+		]
 	},
 	propertyId: {
 		type: Types.ObjectId,
 		ref: "Property"
 	},
-	emergencyContact: {
-		type: {
-			firstName: { type: String },
-			lastName: { type: String },
-			relationship: { type: String },
-			phoneNumber: { type: String }
+	workSpecialization: [
+		{
+			type: String,
+			enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL"]
 		}
-	},
-	workSpecialization: [{
-		type: String,
-		enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL"]
-	}],
+	],
 	workSchedule: {
 		type: Types.ObjectId,
 		ref: "Schedule"
@@ -119,8 +110,8 @@ UserSchema.pre("save", async function () {
 
 // * METHODS
 // Compare password with hashed password
-UserSchema.methods.comparePass = async function (candidatePass) {
-	const isMatch = await bcrypt.compare(candidatePass, this.password); // Compare the candidate password with the hashed password
+UserSchema.methods.comparePass = async function (candidatePassword) {
+	const isMatch = await bcrypt.compare(candidatePassword, this.password); // Compare the candidate password with the hashed password
 
 	return isMatch; // Return the result
 };
