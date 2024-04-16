@@ -1,37 +1,51 @@
 const User = require("../models/User.model");
-const Schedule = require("../models/Schedule.model");
+// const Schedule = require("../models/Schedule.model");
+const Ticket = require("../models/Ticket.model");
 const { good, bad } = require("../lib/utils/res");
+
+const bookWorker = async function (req, res) {
+	const { ticketId } = req.body; // get the user id from the request body
+	const foundTicket = await Ticket.findById(ticketId); // find the ticket using the ticket id
+	const { type } = foundTicket; // get the type of work from the ticket
+	let allWorkers = await User.find({ role: "WORKER", isBooked: false }); // find the user using the type of work
+	let specialists = allWorkers.filter((user) => user.workSpecialization.includes(type)); // filter the users by the type of work
+	if (specialists.length === 0) return bad({ res, status: 404, message: `User not found with specialty ${type}` }); // if the user is not found, return an error
+	let foundUser = specialists[Math.floor(Math.random() * (specialists.length - 1))]; // find a random user
+	if (!foundUser) return bad({ res, status: 404, message: `User not found with specialty ${type}` }); // if the user is not found, return an error
+	if (!foundTicket) return bad({ res, status: 404, message: "Ticket not found" }); // if the ticket is not found, return an error
+	//TODO foundUser.isBooked = true; // set the user as booked
+	foundUser.bookedTicket = ticketId; // set the booked ticket
+	foundTicket.assignedWorker = foundUser._id; // set the assigned worker
+	await foundTicket.save(); // save the ticket
+	await foundUser.save(); // save the user
+	return good({ res, data: foundUser }); // return the user
+};
+
+/*
 
 const genSchedule = async function (req, res) {
 	const { userId } = req.params; // get the user id from the request parameters
 	const { unixtimestamp } = req.body; // get the unix timestamp from the request body
 	const foundUser = await User.findById(userId); // find the user using the user id
-	if (!foundUser) return bad({ res, status: 404, data: "User not found" }); // if the user is not found, return an error
+	if (!foundUser) return bad({ res, status: 404, message: "User not found" }); // if the user is not found, return an error
 	console.log("Generating schedule for", foundUser.username);
 
-	const workScheduleId = await foundUser.populate({path: "workSchedule", select: "_id"}); // get the work schedule id
+	const workScheduleId = await foundUser.populate({ path: "workSchedule", select: "_id" }); // get the work schedule id
 	const foundSchedule = await Schedule.findById(workScheduleId); // find the schedule using the work schedule id
-
-	if (workScheduleId){
-
-	}
 
 	//TODO
 
-
-
-		//if the user has an existing scheduleId on the user model
-		console.log("Deleting existing schedule under user...");
-		if (foundSchedule) {
-			//and if the schedule exists in the database
-			console.log("Deleted existing schedule in database...");
-			await foundSchedule.deleteOne();
-		} else {
-			console.log("Existing schedule not found in database..."); //but the schedule does not exist in the database
-		}
-		foundUser.workSchedule = undefined; //delete the scheduleId from the user model
-		await foundUser.save(); //save the user model
+	//if the user has an existing scheduleId on the user model
+	console.log("Deleting existing schedule under user...");
+	if (foundSchedule) {
+		//and if the schedule exists in the database
+		console.log("Deleted existing schedule in database...");
+		await foundSchedule.deleteOne();
+	} else {
+		console.log("Existing schedule not found in database..."); //but the schedule does not exist in the database
 	}
+	foundUser.workSchedule = undefined; //delete the scheduleId from the user model
+	await foundUser.save(); //save the user model
 
 	if (foundUser.role !== "WORKER") return null; // if the user is not a staff member, return null
 	let date = new Date(unixtimestamp); // get the date
@@ -180,8 +194,11 @@ const trimSchedule = async function () {
 	return schedule; // return the schedule
 };
 
+*/
+
 module.exports = {
-	genSchedule,
-	extendSchedule,
-	trimSchedule
+	bookWorker
+	// genSchedule,
+	// extendSchedule,
+	// trimSchedule
 };

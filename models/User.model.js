@@ -61,12 +61,20 @@ const UserSchema = new Schema({
 	workSpecialization: [
 		{
 			type: String,
-			enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL"]
+			enum: ["Plumbing", "Electrical", "Structural", "HVAC", "General", "Pest", "Other"]
 		}
 	],
 	workSchedule: {
 		type: Types.ObjectId,
 		ref: "Schedule"
+	},
+	isBooked: {
+		type: Boolean,
+		default: false
+	},
+	bookedTicket: {
+		type: Types.ObjectId,
+		ref: "Ticket"
 	},
 	startShift: {
 		type: String,

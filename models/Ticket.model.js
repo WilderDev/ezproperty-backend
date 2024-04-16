@@ -15,13 +15,11 @@ const TicketSchema = new Schema({
 		required: true,
 		default: "MEDIUM"
 	},
-	type: [
-		{
-			type: String,
-			enum: ["Plumbing", "Electrical", "Structural", "HVAC", "General", "Pest", "Other"],
-			required: true
-		}
-	],
+	type: {
+		type: String,
+		enum: ["Plumbing", "Electrical", "Structural", "HVAC", "General", "Pest", "Other"],
+		required: true
+	},
 	description: {
 		type: String,
 		required: true,
