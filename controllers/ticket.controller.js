@@ -61,7 +61,7 @@ const getTicket = async (req, res) => {
                 description: ticket.description,
                 type: ticket.type,
                 priorityLevel: ticket.priorityLevel,
-                propertyId: `${foundProperty.streetAddress} ${foundProperty.aptNumber}`,
+                propertyId: `${foundProperty.streetAddress} Unit: ${foundProperty.aptNumber}`,
                 assignedWorker: `${foundWorker.firstName} ${foundWorker.lastName}`,
                 tenantId: `${foundTenant.firstName} ${foundTenant.lastName}`
             }
