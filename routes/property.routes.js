@@ -1,5 +1,6 @@
 //* IMPORTS
 const router = require("express").Router();
+const { authenticateUser } = require("../middleware/auth.middleware");
 
 const {
 	createProperty,
@@ -9,10 +10,10 @@ const {
 	getAllProperties
 } = require("../controllers/property.controller");
 
-router.post("/create", createProperty);
-router.delete("/delete/:id", deleteProperty);
-router.patch("/edit/:id", updateProperty);
-router.get("/all", getAllProperties);
-router.get("/find/:id", getProperty);
+router.post("/create", authenticateUser, createProperty);
+router.delete("/delete/:id", authenticateUser, deleteProperty);
+router.patch("/edit/:id", authenticateUser, updateProperty);
+router.get("/all", authenticateUser, getAllProperties);
+router.get("/find/:id", authenticateUser, getProperty);
 
 module.exports = router;

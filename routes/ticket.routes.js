@@ -13,12 +13,9 @@ const {
 } = require("../controllers/ticket.controller");
 
 router.post("/create", authenticateUser, createTicket);
-router.delete("/delete/:id", deleteTicket);
-router.patch("/edit/:id", updateTicket);
-router.get("/all", getAllTickets);
-router.get("/find/:id", getTicket);
-router.post("/assign/manual/:id", assignWorkerManual);
-router.post("/assign/auto/:id", assignWorkerAuto);
-router.get("/workers/:id", getAvailableWorkers);
+router.delete("/delete/:id", authenticateUser, deleteTicket);
+router.patch("/edit/:id", authenticateUser, updateTicket);
+router.get("/all", authenticateUser, getAllTickets);
+router.get("/find/:id", authenticateUser, getTicket);
 
 module.exports = router;
