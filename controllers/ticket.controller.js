@@ -212,21 +212,21 @@ const completedTicket = async (req, res) => {
 	res.status(200).json({ success: true, data: { ticket } });
 };
 const getTicket = async (req, res) => {
-	const { id: ticketID } = req.params;
-	const ticket = await Ticket.findOne({ _id: ticketID });
+    const { id: ticketID } = req.params;
+    const ticket = await Ticket.findOne({ _id: ticketID });
+    if (!ticket) {
+        return res.status(404).json({ msg: `No ticket found with id: ${ticketID}` });
+    }
+    //  Property Address and APT. Number
+    const foundProperty = await Property.findById(ticket.propertyId);
+    // Worker Name
+    const foundWorker = await User.findById(ticket.assignedWorker);
+    // Tenant Name
+    const foundTenant = await User.findById(ticket.tenantId);
 
 	if (!ticket) {
 		return res.status(404).json({ msg: `No ticket found with id: ${ticketID}` });
 	}
-
-	//  Property Address and APT. Number
-	const foundProperty = await Property.findById(ticket.propertyId);
-
-	// Worker Name
-	const foundWorker = await User.findById(ticket.assignedWorker);
-
-	// Tenant Name
-	const foundTenant = await User.findById(ticket.tenantId);
 
 	res.status(200).json({
 		success: true,
