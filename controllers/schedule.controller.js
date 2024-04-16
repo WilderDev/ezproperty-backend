@@ -173,9 +173,192 @@ const trimSchedule = async function (req, res) {
 	good({ res, data: convertedSchedule }); // return the schedule
 };
 
+const findAvailWorkersTimeslots = async (req, res) => {
+	const { ticketId, expectedJobLength } = req.body; // get ticket id and expected job length from request body
+	const ticket = await Ticket.findOne({ _id: ticketId }); // find ticket by id
+	const { priorityLevel, type } = ticket; // get ticket priority
+	const allWorkers = await User.find({ role: "WORKER" }); // get all workers with the same specialty as the ticket
+	let specialists = allWorkers.filter((user) => user.workSpecialization.includes(type)); // filter the users by the type of work
+	if (specialists.length === 0) return bad({ res, status: 404, message: `User not found with specialty ${type}` }); // if the user is not found, return an error
+	const workerStartTimes = {}; // create object to store worker start times
+	const bumpedJobs = [];
+
+	if (priorityLevel === "LOW") {
+		for (let worker of specialists) {
+			// loop through workers
+			if (!worker.workSchedule) continue; // if worker does not have a schedule, skip iteration and move to next worker
+			const foundSchedule = await Schedule.findById({ _id: worker.workSchedule }); // get worker schedule
+			if (!foundSchedule) continue; // if worker schedule does not exist in the database, skip iteration and move to next worker
+			let freeTimeBlocks = {}; // create object to store start times for this worker
+			const convertedSchedule = convertMapofMaps(foundSchedule["schedule"]); // convert the schedule (map of maps) to an object
+			for (const [day, timeslots] of Object.entries(convertedSchedule)) {
+				// loop through days, destructure day and timeslots
+				const timeslotsArray = Object.entries(timeslots); // convert timeslots to an array
+				let count = 0; // set count to 0 (number of consecutive available timeslots)
+				let startIndex = null; // set start index to null (index of the first timeslot of a possible available time block)
+				for (let i = 0; i < timeslotsArray.length; i++) {
+					// loop through timeslots
+					let currentTimeslotValue = timeslotsArray[i][1];
+					if (currentTimeslotValue === null) {
+						continue;
+					}
+					if (currentTimeslotValue.ticketId === (undefined || null)) {
+						// if there is a ticketId set to undefined
+						if (startIndex === null) {
+							// if start index is null
+							startIndex = i; // set start index to i
+						}
+						count++; // increment count
+						if (count === expectedJobLength) {
+							// if count is equal to expected timeslots
+							freeTimeBlocks[day] = freeTimeBlocks[day] || []; // create array for each day if it does not exist inside start times
+							freeTimeBlocks[day].push(timeslotsArray[startIndex][0]); // push available start time to the array corresponding to the day
+							startIndex = null; // reset start index
+							count = 0; // reset count
+							i -= expectedJobLength - 1; // move i back to the start of the available time block
+						}
+					} else {
+						count = 0; // reset count
+						startIndex = null; // reset start index
+					}
+				}
+			}
+			workerStartTimes[worker["_id"]] = freeTimeBlocks; // set worker start times
+		}
+		good({ res, data: workerStartTimes }); // return the worker start times
+	} else if (priorityLevel === "MEDIUM") {
+		for (let worker of specialists) {
+			// loop through workers
+			if (!worker.workSchedule) continue; // if worker does not have a schedule, skip iteration and move to next worker
+			const foundSchedule = await Schedule.findById({ _id: worker.workSchedule }); // get worker schedule
+			if (!foundSchedule) continue; // if worker schedule does not exist in the database, skip iteration and move to next worker
+			let freeTimeBlocks = {}; // create object to store start times for this worker
+			const convertedSchedule = convertMapofMaps(foundSchedule["schedule"]); // convert the schedule (map of maps) to an object
+			for (const [day, timeslots] of Object.entries(convertedSchedule)) {
+				// loop through days, destructure day and timeslots
+				const timeslotsArray = Object.entries(timeslots); // convert timeslots to an array
+				let count = 0; // set count to 0
+				let startIndex = null; // set start index to null
+				for (let i = 0; i < timeslotsArray.length; i++) {
+					// loop through timeslots
+					let currentTimeslotValue = timeslotsArray[i][1];
+					if (currentTimeslotValue === null) {
+						continue;
+					}
+					if (currentTimeslotValue.ticketId !== (undefined || null)) {
+						// if there is a ticketId not set to undefined
+						const scheduledTicket = await Ticket.findById({
+							_id: currentTimeslotValue.ticketId
+						}); // find ticket by id
+						if (!scheduledTicket) {
+							// if scheduled ticket does not exist
+							currentTimeslotValue.ticketId = undefined; // set ticket id to undefined
+						}
+						if (scheduledTicket.priorityLevel === "LOW") {
+							// if ticket priority is low
+							bumpedJobs.push({
+								scheduledTicketId: scheduledTicket["_id"],
+								scheduledTicketWorker: worker._id,
+								scheduledTicketTimeslot: timeslotsArray[i][1]
+							}); // add ticket to array if it needs to be rescheduled
+							currentTimeslotValue.ticketId = undefined; // set ticket id to undefined
+						}
+					}
+					if (currentTimeslotValue.ticketId === (undefined || null)) {
+						// if there is a ticketId set to undefined
+						if (startIndex === null) {
+							// if start index is null
+							startIndex = i; // set start index to i
+						}
+						count++; // increment count
+						if (count === expectedJobLength) {
+							// if count is equal to expected timeslots
+							freeTimeBlocks[day] = freeTimeBlocks[day] || []; // create array for each day if it does not exist inside start times								freeTimeBlocks[day].push(timeslotsArray[startIndex][0]); // push available start time to the array corresponding to the day
+							freeTimeBlocks[day].push(timeslotsArray[startIndex][0]); // push available start time to the array corresponding to the day
+							startIndex = null; // reset start index
+							count = 0; // reset count
+							i -= expectedJobLength - 1; // move i back to the start of the available time block
+						}
+					} else {
+						count = 0; // reset count
+						startIndex = null; // reset start index
+					}
+				}
+			}
+			workerStartTimes[worker["_id"]] = freeTimeBlocks; // set worker start times
+		}
+		console.log(bumpedJobs);
+		good({ res, data: workerStartTimes, bumpedJobs }); // return worker start times
+	} else if (priorityLevel === "HIGH") {
+		for (let worker of specialists) {
+			// loop through workers
+			if (!worker.workSchedule) continue; // if worker does not have a schedule, skip iteration and move to next worker
+			const foundSchedule = await Schedule.findById({ _id: worker.workSchedule }); // get worker schedule
+			if (!foundSchedule) continue; // if worker schedule does not exist in the database, skip iteration and move to next worker
+			let freeTimeBlocks = {}; // create object to store start times for this worker
+			const convertedSchedule = convertMapofMaps(foundSchedule["schedule"]); // convert the schedule (map of maps) to an object
+			for (const [day, timeslots] of Object.entries(convertedSchedule)) {
+				// loop through days, destructure day and timeslots
+				const timeslotsArray = Object.entries(timeslots); // convert timeslots to an array
+				let count = 0; // set count to 0
+				let startIndex = null; // set start index to null
+				for (let i = 0; i < timeslotsArray.length; i++) {
+					// loop through timeslots
+					let currentTimeslotValue = timeslotsArray[i][1];
+					if (currentTimeslotValue === null) {
+						continue;
+					}
+					if (currentTimeslotValue.ticketId !== (undefined || null)) {
+						// if there is a ticketId not set to undefined
+						const scheduledTicket = await Ticket.findById({
+							_id: currentTimeslotValue.ticketId
+						}); // find ticket by id
+						if (!scheduledTicket) {
+							// if scheduled ticket does not exist
+							currentTimeslotValue.ticketId = undefined; // set ticket id to undefined
+						}
+						if (scheduledTicket.priorityLevel === ("LOW" || "MEDIUM")) {
+							// if ticket priority is low or medium
+							bumpedJobs.push({
+								scheduledTicketId: scheduledTicket["_id"],
+								scheduledTicketWorker: worker._id,
+								scheduledTicketTimeslot: timeslotsArray[i][1]
+							}); // add ticket to array if it needs to be rescheduled
+							currentTimeslotValue.ticketId = undefined; // set ticket id to undefined
+						}
+					}
+					if (currentTimeslotValue.ticketId === (undefined || null) || currentTimeslotValue === null) {
+						// if there is a ticketId set to undefined or timeslot is null
+						if (startIndex === null) {
+							// if start index is null
+							startIndex = i; // set start index to i
+						}
+						count++; // increment count
+						if (count === expectedJobLength) {
+							// if count is equal to expected timeslots
+							freeTimeBlocks[day] = freeTimeBlocks[day] || []; // create array for each day if it does not exist inside start times								freeTimeBlocks[day].push(timeslotsArray[startIndex][0]); // push available start time to the array corresponding to the day
+							freeTimeBlocks[day].push(timeslotsArray[startIndex][0]); // push available start time to the array corresponding to the day
+							startIndex = null; // reset start index
+							count = 0; // reset count
+							i -= expectedJobLength - 1; // move i back to the start of the available time block
+						}
+					} else {
+						count = 0; // reset count
+						startIndex = null; // reset start index
+					}
+				}
+			}
+			workerStartTimes[worker["_id"]] = freeTimeBlocks; // set worker start times
+		}
+		console.log(bumpedJobs);
+		good({ res, data: workerStartTimes, bumpedJobs }); // return worker start times
+	}
+};
+
 module.exports = {
 	bookWorker,
 	genSchedule,
 	extendSchedule,
-	trimSchedule
+	trimSchedule,
+	findAvailWorkersTimeslots
 };
