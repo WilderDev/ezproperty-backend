@@ -15,7 +15,12 @@
     const loginLink = `${url}/login?token=${passwordToken}&email=${email}`; // Create the login link
 
         // Create the message
-        const message = `<h2>New Ticket</h2><p>${username}, Please click on the following link to login to ezproperty.</p><br /><p><a href="${loginLink}" target="_blank">loginLink</a> to verify your email</p>`;
+        const message = `<h2>New Ticket</h2><p>${Manager.firstName}, The following ticket has been created on your property.</p><br /><p> Ticket Type: ${Ticket.type} <br> Priority: ${Ticket.priorityLevel}<br> Tenant: ${Tenant.firstName} ${Tenant.lastName}<br> Property: ${propertyID} ${foundProperty.name} <br>Description: ${Ticket.description}`;
+
+
+
+
+
 
         // Send the email
         return sendEmail({ to: email, subject: "New Ticket", html: message });
