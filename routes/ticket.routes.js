@@ -17,7 +17,7 @@ router.delete("/delete/:id", authenticateUser, deleteTicket);
 router.patch("/edit/:id", authenticateUser, updateTicket);
 router.get("/all", authenticateUser, getAllTickets);
 router.get("/find/:id", authenticateUser, getTicket);
-router.post("/edit/assign/:id", authenticateUser, assignWorker);
+router.patch("/edit/assign/:id", authenticateUser, assignWorker);
 router.post("/edit/blockage/:id", authenticateUser, blockedTicket);
 router.post("/edit/completed/:id", authenticateUser, completedTicket);
 
