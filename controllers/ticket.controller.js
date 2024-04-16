@@ -26,9 +26,6 @@ const createTicket = async (req, res) => {
 		});
 	}
 
-	// TODO: Assign the worker
-	const worker = "661c24dc3e9e765d035c3d1a";
-
 	// TODO: AI SOLUTION
 	const solution = "AI COOL";
 
@@ -39,7 +36,6 @@ const createTicket = async (req, res) => {
 		priorityLevel,
 		solution,
 		propertyId: foundProperty._id,
-		assignedWorker: worker,
 		manager: foundManager._id,
 		tenantId: tenant._id
 	});
@@ -72,6 +68,71 @@ const deleteTicket = async (req, res) => {
 };
 const updateTicket = async (req, res) => {
 	const { id: ticketID } = req.params;
+
+	const { progress } = req.body;
+	console.log("req.body:", req.body);
+
+	// If the ticket is blocked, please send these emails
+	if (progress === "Blockage") {
+		const foundTicket = await Ticket.findById(ticketID);
+		const foundManager = await User.findById(foundTicket.manager);
+		const foundTenant = await User.find({ _id: foundTicket.tenantId });
+		const foundProperty = await Property.find({ _id: foundTicket.propertyId });
+
+		const url = "http://localhost:4200";
+		const editTicketLink = `${url}/ticket/${foundTicket._id}`;
+
+		// create email message (address, apt, ticket description)
+		const managerMessage = `<h2>Ticket Re-assignment NEEDED</h2><p>The following ticket has been incompleted(blocked) and returned to you for re-assignment.</p><br /><p> Ticket Type: ${foundTicket.type} <br> Priority: ${foundTicket.priorityLevel}<br> Tenant: ${foundTenant[0].firstName} ${foundTenant[0].lastName}<br> Property: ${foundProperty[0].streetAddress} ${foundProperty[0].aptNumber} <br>Description: ${foundTicket.description}. <br><p>To re-assign ticket, please click <a href="${editTicketLink}">here</a>.`;
+
+		// Send the email
+		await sendEmail({
+			to: foundManager.email,
+			subject: "Ticket re-Assignment NEEDED",
+			html: managerMessage
+		});
+
+		// create email message (address, apt, ticket description)
+		const tenantMessage = `<h2>Ticket Blocked - Reassignment Coming Soon</h2><p>The following ticket has been blocked and will be re-assigned. For additional information, please contact your property manager.</p><br /><p> Ticket Type: ${foundTicket.type} <br> Priority: ${foundTicket.priorityLevel}<br> Tenant: ${foundTenant[0].firstName} ${foundTenant[0].lastName}<br> Property: ${foundProperty[0].streetAddress} ${foundProperty[0].aptNumber} <br>Description: ${foundTicket.description}.`;
+
+		// Send the email
+		await sendEmail({
+			to: foundTenant[0].email,
+			subject: "Ticket Blocked - Reassignment coming soon",
+			html: tenantMessage
+		});
+	}
+
+	if (progress === "Completed") {
+		const foundTicket = await Ticket.findById(ticketID);
+		const foundManager = await User.findById(foundTicket.manager);
+		const foundTenant = await User.find({ _id: foundTicket.tenantId });
+		const foundProperty = await Property.find({ _id: foundTicket.propertyId });
+
+		const url = "http://localhost:4200";
+		const editTicketLink = `${url}/ticket/${foundTicket._id}`;
+
+		// create email message (address, apt, ticket description)
+		const managerMessage = `<h2>Ticket COMPLETED</h2><p>The following ticket has been completed.</p><br /><p> Ticket Type: ${foundTicket.type} <br> Priority: ${foundTicket.priorityLevel}<br> Tenant: ${foundTenant[0].firstName} ${foundTenant[0].lastName}<br> Property: ${foundProperty[0].streetAddress} ${foundProperty[0].aptNumber} <br>Description: ${foundTicket.description}. <br><p>To re-assign ticket, please click <a href="${editTicketLink}">here</a>.`;
+
+		// Send the email
+		await sendEmail({
+			to: foundManager.email,
+			subject: "Ticket COMPLETED",
+			html: managerMessage
+		});
+
+		// create email message (address, apt, ticket description)
+		const tenantMessage = `<h2>Ticket Completed</h2><p>The following ticket has been completed. If you continue to have issues, please contact your property manager, or submit a new ticket.</p><br /><p> Ticket Type: ${foundTicket.type} <br> Priority: ${foundTicket.priorityLevel}<br> Tenant: ${foundTenant[0].firstName} ${foundTenant[0].lastName}<br> Property: ${foundProperty[0].streetAddress} ${foundProperty[0].aptNumber} <br>Description: ${foundTicket.description}.`;
+
+		// Send the email
+		await sendEmail({
+			to: foundTenant[0].email,
+			subject: "Ticket COMPLETED - Thank you",
+			html: tenantMessage
+		});
+	}
+
 	const ticket = await Ticket.findByIdAndUpdate({ _id: ticketID }, req.body, {
 		new: true,
 		runValidators: true
@@ -117,93 +178,6 @@ const assignWorker = async (req, res) => {
 	await sendEmail({
 		to: foundTenant[0].email,
 		subject: "Ticket Assignment",
-		html: tenantMessage
-	});
-
-	// return good
-
-	res.status(200).json({ success: true, data: { ticket } });
-};
-const blockedTicket = async (req, res) => {
-	const { id: ticketID } = req.params;
-	const ticket = await Ticket.findByIdAndUpdate(
-		{ _id: ticketID },
-		{ progress: "Blockage" },
-		{
-			new: true,
-			runValidators: true
-		}
-	);
-
-	const foundTicket = await Ticket.findById(ticketID);
-	const foundWorker = await User.findById(foundTicket.assignedWorker);
-	const foundManager = await User.findById(foundTicket.manager);
-	const foundTenant = await User.find({ _id: foundTicket.tenantId });
-	const foundProperty = await Property.find({ _id: foundTicket.propertyId });
-
-	const url = "http://localhost:4200";
-	const editTicketLink = `${url}/ticket/${foundTicket._id}`;
-
-	// create email message (address, apt, ticket description)
-	const managerMessage = `<h2>Ticket Re-assignment NEEDED</h2><p>The following ticket has been incompleted(blocked) and returned to you for re-assignment.</p><br /><p> Ticket Type: ${foundTicket.type} <br> Priority: ${foundTicket.priorityLevel}<br> Tenant: ${foundTenant[0].firstName} ${foundTenant[0].lastName}<br> Property: ${foundProperty[0].streetAddress} ${foundProperty[0].aptNumber} <br>Description: ${foundTicket.description}. <br><p>To re-assign ticket, please click <a href="${editTicketLink}">here</a>.`;
-
-	// Send the email
-	await sendEmail({
-		to: foundManager.email,
-		subject: "Ticket re-Assignment NEEDED",
-		html: managerMessage
-	});
-
-	// create email message (address, apt, ticket description)
-	const tenantMessage = `<h2>Ticket Blocked - Reassignment Coming Soon</h2><p>The following ticket has been blocked and will be re-assigned. For additional information, please contact your property manager.</p><br /><p> Ticket Type: ${foundTicket.type} <br> Priority: ${foundTicket.priorityLevel}<br> Tenant: ${foundTenant[0].firstName} ${foundTenant[0].lastName}<br> Property: ${foundProperty[0].streetAddress} ${foundProperty[0].aptNumber} <br>Description: ${foundTicket.description}.`;
-
-	// Send the email
-	await sendEmail({
-		to: foundTenant[0].email,
-		subject: "Ticket Blocked - Reassignment coming soon",
-		html: tenantMessage
-	});
-
-	// return good
-
-	res.status(200).json({ success: true, data: { ticket } });
-};
-const completedTicket = async (req, res) => {
-	const { id: ticketID } = req.params;
-	const ticket = await Ticket.findByIdAndUpdate(
-		{ _id: ticketID },
-		{ progress: "Completed" },
-		{
-			new: true,
-			runValidators: true
-		}
-	);
-
-	const foundTicket = await Ticket.findById(ticketID);
-	const foundManager = await User.findById(foundTicket.manager);
-	const foundTenant = await User.find({ _id: foundTicket.tenantId });
-	const foundProperty = await Property.find({ _id: foundTicket.propertyId });
-
-	const url = "http://localhost:4200";
-	const editTicketLink = `${url}/ticket/${foundTicket._id}`;
-
-	// create email message (address, apt, ticket description)
-	const managerMessage = `<h2>Ticket COMPLETED</h2><p>The following ticket has been completed.</p><br /><p> Ticket Type: ${foundTicket.type} <br> Priority: ${foundTicket.priorityLevel}<br> Tenant: ${foundTenant[0].firstName} ${foundTenant[0].lastName}<br> Property: ${foundProperty[0].streetAddress} ${foundProperty[0].aptNumber} <br>Description: ${foundTicket.description}. <br><p>To re-assign ticket, please click <a href="${editTicketLink}">here</a>.`;
-
-	// Send the email
-	await sendEmail({
-		to: foundManager.email,
-		subject: "Ticket COMPLETED",
-		html: managerMessage
-	});
-
-	// create email message (address, apt, ticket description)
-	const tenantMessage = `<h2>Ticket Completed</h2><p>The following ticket has been completed. If you continue to have issues, please contact your property manager, or submit a new ticket.</p><br /><p> Ticket Type: ${foundTicket.type} <br> Priority: ${foundTicket.priorityLevel}<br> Tenant: ${foundTenant[0].firstName} ${foundTenant[0].lastName}<br> Property: ${foundProperty[0].streetAddress} ${foundProperty[0].aptNumber} <br>Description: ${foundTicket.description}.`;
-
-	// Send the email
-	await sendEmail({
-		to: foundTenant[0].email,
-		subject: "Ticket COMPLETED - Thank you",
 		html: tenantMessage
 	});
 
@@ -269,7 +243,5 @@ module.exports = {
 	updateTicket,
 	getTicket,
 	getAllTickets,
-	assignWorker,
-	blockedTicket,
-	completedTicket
+	assignWorker
 };
