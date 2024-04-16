@@ -212,17 +212,17 @@ const completedTicket = async (req, res) => {
 	res.status(200).json({ success: true, data: { ticket } });
 };
 const getTicket = async (req, res) => {
-    const { id: ticketID } = req.params;
-    const ticket = await Ticket.findOne({ _id: ticketID });
-    if (!ticket) {
-        return res.status(404).json({ msg: `No ticket found with id: ${ticketID}` });
-    }
-    //  Property Address and APT. Number
-    const foundProperty = await Property.findById(ticket.propertyId);
-    // Worker Name
-    const foundWorker = await User.findById(ticket.assignedWorker);
-    // Tenant Name
-    const foundTenant = await User.findById(ticket.tenantId);
+	const { id: ticketID } = req.params;
+	const ticket = await Ticket.findOne({ _id: ticketID });
+	if (!ticket) {
+		return res.status(404).json({ msg: `No ticket found with id: ${ticketID}` });
+	}
+	//  Property Address and APT. Number
+	const foundProperty = await Property.findById(ticket.propertyId);
+	// Worker Name
+	const foundWorker = await User.findById(ticket.assignedWorker);
+	// Tenant Name
+	const foundTenant = await User.findById(ticket.tenantId);
 
 	if (!ticket) {
 		return res.status(404).json({ msg: `No ticket found with id: ${ticketID}` });
@@ -248,7 +248,17 @@ const getAllTickets = async (req, res) => {
 	// get the user id from the req user
 	const userId = req.user.userId;
 
-	const tickets = await Ticket.find({ manager: userId });
+	const userRole = req.user.role;
+
+	let tickets = [];
+
+	if (userRole === "MANAGER") {
+		tickets = await Ticket.find({ manager: userId });
+	}
+
+	if (userRole === "WORKER") {
+		tickets = await Ticket.find({ assignedWorker: userId });
+	}
 
 	res.status(200).json({ success: true, data: { tickets } });
 };
