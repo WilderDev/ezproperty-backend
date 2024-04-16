@@ -26,9 +26,6 @@ const createTicket = async (req, res) => {
 		});
 	}
 
-	// TODO: Assign the worker
-	const worker = "661c24dc3e9e765d035c3d1a";
-
 	// TODO: AI SOLUTION
 	const solution = "AI COOL";
 
@@ -39,7 +36,6 @@ const createTicket = async (req, res) => {
 		priorityLevel,
 		solution,
 		propertyId: foundProperty._id,
-		assignedWorker: worker,
 		manager: foundManager._id,
 		tenantId: tenant._id
 	});
