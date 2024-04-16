@@ -1,9 +1,21 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, Types } = require("mongoose");
 
 const ScheduleSchema = new Schema({
 	schedule: {
-		type: Schema.Types.Mixed,
-		default: () => ({})
+		type: Map,
+		of: {
+			type: Map,
+			of: {
+				type: {
+					type: Types.ObjectId,
+					ref: "Ticket",
+					validate: {
+						validator: (v) => v === undefined || Types.ObjectId.isValid(v),
+						message: "ticketId must be a valid ObjectId or undefined"
+					}
+				}
+			}
+		}
 	}
 });
 

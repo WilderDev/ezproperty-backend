@@ -2,6 +2,7 @@
 const { Schema, model, Types } = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { validate } = require("./Schedule.model");
 
 // * SCHEMA
 const UserSchema = new Schema({
