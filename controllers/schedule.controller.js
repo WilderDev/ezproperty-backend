@@ -162,7 +162,6 @@ const trimSchedule = async function (req, res) {
 		scheduleWindow.add(nextDayISO); // add the day to the schedule window
 	}
 	Object.keys(convertedSchedule).forEach((day) => {
-		console.log(day);
 		// get the keys of the schedule
 		// for each day in the schedule
 		if (!scheduleWindow.has(day)) {
