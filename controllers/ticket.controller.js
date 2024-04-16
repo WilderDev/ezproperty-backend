@@ -207,15 +207,15 @@ const getTicket = async (req, res) => {
 		data: {
 			ticket: {
 				progress: ticket.progress,
-				description: ticket.description,
-				type: ticket.type,
-				priorityLevel: ticket.priorityLevel,
-				propertyId: `${foundProperty.streetAddress} ${foundProperty.aptNumber}`,
-				assignedWorker: `${foundWorker.firstName} ${foundWorker.lastName}`,
-				tenantId: `${foundTenant.firstName} ${foundTenant.lastName}`
-			}
-		}
-	});
+                description: ticket.description,
+                type: ticket.type,
+                priorityLevel: ticket.priorityLevel,
+                propertyId: `${foundProperty.streetAddress} Unit: ${foundProperty.aptNumber}`,
+                assignedWorker: `${foundWorker.firstName} ${foundWorker.lastName}`,
+                tenantId: `${foundTenant.firstName} ${foundTenant.lastName}`
+            }
+        }
+    });
 };
 
 const getAllTickets = async (req, res) => {
