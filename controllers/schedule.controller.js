@@ -184,6 +184,8 @@ const findAvailWorkersTimeslots = async (req, res) => {
 	const bumpedJobs = [];
 
 	if (priorityLevel === "LOW") {
+		// find all available timeslots for each worker
+
 		for (let worker of specialists) {
 			// loop through workers
 			if (!worker.workSchedule) continue; // if worker does not have a schedule, skip iteration and move to next worker
@@ -225,7 +227,57 @@ const findAvailWorkersTimeslots = async (req, res) => {
 			}
 			workerStartTimes[worker["_id"]] = freeTimeBlocks; // set worker start times
 		}
-		good({ res, data: workerStartTimes }); // return the worker start times
+
+		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! WORK IN PROGRESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// find the worker with the least amount of jobs
+
+		let leastWorkedWorker; // variable to store the worker with the least amount of jobs
+		let leastWorkedWorkerTimeslotCount; // variable to store the number of jobs the least worked worker has
+		for (let worker of specialists) {
+			// loop through workers
+			let workerJobCount = 0; // variable to store the number of jobs the worker has
+			let workerSchedule = await Schedule.findById(worker.workSchedule); // get worker schedule
+			let workerScheduleConverted = convertMapofMaps(workerSchedule.schedule); // convert worker schedule to object
+			let workerScheduleKeys = Object.keys(workerScheduleConverted); // get keys of worker schedule
+			for (let day of workerScheduleKeys) {
+				// loop through days
+				let dayTimeslots = Object.entries(workerScheduleConverted[day]); // get timeslots for the day
+				for (let timeslot of dayTimeslots) {
+					// loop through timeslots
+					if (timeslot[1].ticketId !== undefined) {
+						// if there is a ticket scheduled
+						workerJobCount++; // increment job count
+					}
+				}
+			}
+			if (!leastWorkedWorker) {
+				// if leastWorkedWorker is undefined
+				leastWorkedWorker = worker._id; // set leastWorkedWorker to worker id
+				leastWorkedWorkerTimeslotCount = workerJobCount; // set leastWorkedWorkerTimeslotCount to workerJobCount
+			} else {
+				if (workerJobCount < leastWorkedWorkerTimeslotCount) {
+					// if worker has less jobs than leastWorkedWorker
+					leastWorkedWorker = worker._id; // set leastWorkedWorker to worker id
+					leastWorkedWorkerTimeslotCount = workerJobCount; // set leastWorkedWorkerTimeslotCount to workerJobCount
+				}
+			}
+		}
+
+		let chosenTimeBlock = workerStartTimes[leastWorkedWorker][0]; // get the first available time block for the least worked worker
+		let chosenDay = Object.keys(chosenTimeBlock)[0]; // get the day of the chosen time block
+		let chosenTime = chosenTimeBlock[chosenDay][0]; // get the time of the chosen time block
+		let chosenWorker = leastWorkedWorker; // get the worker id of the chosen worker
+		let chosenWorkerSchedule = await Schedule.findById({ _id: specialists[chosenWorker].workSchedule }); // get the schedule of the chosen worker
+		let chosenWorkerScheduleConverted = convertMapofMaps(chosenWorkerSchedule.schedule); // convert the schedule of the chosen worker to an object
+		chosenWorkerScheduleConverted[chosenDay][chosenTime] = { ticketId: ticketId }; // set the ticket id of the chosen time block to the ticket id
+		for (let i = 0; i < expectedJobLength; i++) {
+			// loop through the expected job length
+			let time = chosenTimeBlock[chosenDay][i]; // get the time of the time block
+			chosenWorkerScheduleConverted[chosenDay][time] = { ticketId: ticketId }; // set the ticket id of the time block to the ticket id
+		}
+		await Schedule.findByIdAndUpdate({ _id: chosenWorkerSchedule._id }, { schedule: chosenWorkerScheduleConverted }); // save the schedule of the chosen worker
+		await Ticket.findByIdAndUpdate({ _id: ticketId }, { assignedWorker: chosenWorker }); // set the assigned worker of the ticket to the chosen worker
+		good({ res, data: { chosenWorker, chosenDay, chosenTime } }); // return the chosen worker, day, and time
 	} else if (priorityLevel === "MEDIUM") {
 		for (let worker of specialists) {
 			// loop through workers
@@ -273,7 +325,7 @@ const findAvailWorkersTimeslots = async (req, res) => {
 						count++; // increment count
 						if (count === expectedJobLength) {
 							// if count is equal to expected timeslots
-							freeTimeBlocks[day] = freeTimeBlocks[day] || []; // create array for each day if it does not exist inside start times								freeTimeBlocks[day].push(timeslotsArray[startIndex][0]); // push available start time to the array corresponding to the day
+							freeTimeBlocks[day] = freeTimeBlocks[day] || []; // create array for each day if it does not exist inside start times
 							freeTimeBlocks[day].push(timeslotsArray[startIndex][0]); // push available start time to the array corresponding to the day
 							startIndex = null; // reset start index
 							count = 0; // reset count
@@ -288,7 +340,58 @@ const findAvailWorkersTimeslots = async (req, res) => {
 			workerStartTimes[worker["_id"]] = freeTimeBlocks; // set worker start times
 		}
 		console.log(bumpedJobs);
-		good({ res, data: workerStartTimes, bumpedJobs }); // return worker start times
+
+		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! WORK IN PROGRESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// find the worker with the least amount of jobs
+
+		let leastWorkedWorker; // variable to store the worker with the least amount of jobs
+		let leastWorkedWorkerTimeslotCount; // variable to store the number of jobs the least worked worker has
+		for (let worker of specialists) {
+			// loop through workers
+			let workerJobCount = 0; // variable to store the number of jobs the worker has
+			let workerSchedule = await Schedule.findById(worker.workSchedule); // get worker schedule
+			let workerScheduleConverted = convertMapofMaps(workerSchedule.schedule); // convert worker schedule to object
+			let workerScheduleKeys = Object.keys(workerScheduleConverted); // get keys of worker schedule
+			for (let day of workerScheduleKeys) {
+				// loop through days
+				let dayTimeslots = Object.entries(workerScheduleConverted[day]); // get timeslots for the day
+				for (let timeslot of dayTimeslots) {
+					// loop through timeslots
+					if (timeslot[1].ticketId !== undefined) {
+						// if there is a ticket scheduled
+						workerJobCount++; // increment job count
+					}
+				}
+			}
+			if (!leastWorkedWorker) {
+				// if leastWorkedWorker is undefined
+				leastWorkedWorker = worker._id; // set leastWorkedWorker to worker id
+				leastWorkedWorkerTimeslotCount = workerJobCount; // set leastWorkedWorkerTimeslotCount to workerJobCount
+			} else {
+				if (workerJobCount < leastWorkedWorkerTimeslotCount) {
+					// if worker has less jobs than leastWorkedWorker
+					leastWorkedWorker = worker._id; // set leastWorkedWorker to worker id
+					leastWorkedWorkerTimeslotCount = workerJobCount; // set leastWorkedWorkerTimeslotCount to workerJobCount
+				}
+			}
+		}
+
+		let chosenTimeBlock = workerStartTimes[leastWorkedWorker][0]; // get the first available time block for the least worked worker
+		let chosenDay = Object.keys(chosenTimeBlock)[0]; // get the day of the chosen time block
+		let chosenTime = chosenTimeBlock[chosenDay][0]; // get the time of the chosen time block
+		let chosenWorker = leastWorkedWorker; // get the worker id of the chosen worker
+		let chosenWorkerSchedule = await Schedule.findById({ _id: specialists[chosenWorker].workSchedule }); // get the schedule of the chosen worker
+		let chosenWorkerScheduleConverted = convertMapofMaps(chosenWorkerSchedule.schedule); // convert the schedule of the chosen worker to an object
+		chosenWorkerScheduleConverted[chosenDay][chosenTime] = { ticketId: ticketId }; // set the ticket id of the chosen time block to the ticket id
+		//TODO if chosenDay and chosenTime already have a ticketId, find another time block for the lower priority job
+		for (let i = 0; i < expectedJobLength; i++) {
+			// loop through the expected job length
+			let time = chosenTimeBlock[chosenDay][i]; // get the time of the time block
+			chosenWorkerScheduleConverted[chosenDay][time] = { ticketId: ticketId }; // set the ticket id of the time block to the ticket id
+		}
+		await Schedule.findByIdAndUpdate({ _id: chosenWorkerSchedule._id }, { schedule: chosenWorkerScheduleConverted }); // save the schedule of the chosen worker
+		await Ticket.findByIdAndUpdate({ _id: ticketId }, { assignedWorker: chosenWorker }); // set the assigned worker of the ticket to the chosen worker
+		good({ res, data: { chosenWorker, chosenDay, chosenTime } }); // return the chosen worker, day, and time
 	} else if (priorityLevel === "HIGH") {
 		for (let worker of specialists) {
 			// loop through workers
@@ -336,7 +439,7 @@ const findAvailWorkersTimeslots = async (req, res) => {
 						count++; // increment count
 						if (count === expectedJobLength) {
 							// if count is equal to expected timeslots
-							freeTimeBlocks[day] = freeTimeBlocks[day] || []; // create array for each day if it does not exist inside start times								freeTimeBlocks[day].push(timeslotsArray[startIndex][0]); // push available start time to the array corresponding to the day
+							freeTimeBlocks[day] = freeTimeBlocks[day] || []; // create array for each day if it does not exist inside start times
 							freeTimeBlocks[day].push(timeslotsArray[startIndex][0]); // push available start time to the array corresponding to the day
 							startIndex = null; // reset start index
 							count = 0; // reset count
@@ -350,8 +453,58 @@ const findAvailWorkersTimeslots = async (req, res) => {
 			}
 			workerStartTimes[worker["_id"]] = freeTimeBlocks; // set worker start times
 		}
-		console.log(bumpedJobs);
-		good({ res, data: workerStartTimes, bumpedJobs }); // return worker start times
+
+		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! WORK IN PROGRESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// find the worker with the least amount of jobs
+
+		let leastWorkedWorker; // variable to store the worker with the least amount of jobs
+		let leastWorkedWorkerTimeslotCount; // variable to store the number of jobs the least worked worker has
+		for (let worker of specialists) {
+			// loop through workers
+			let workerJobCount = 0; // variable to store the number of jobs the worker has
+			let workerSchedule = await Schedule.findById(worker.workSchedule); // get worker schedule
+			let workerScheduleConverted = convertMapofMaps(workerSchedule.schedule); // convert worker schedule to object
+			let workerScheduleKeys = Object.keys(workerScheduleConverted); // get keys of worker schedule
+			for (let day of workerScheduleKeys) {
+				// loop through days
+				let dayTimeslots = Object.entries(workerScheduleConverted[day]); // get timeslots for the day
+				for (let timeslot of dayTimeslots) {
+					// loop through timeslots
+					if (timeslot[1].ticketId !== undefined) {
+						// if there is a ticket scheduled
+						workerJobCount++; // increment job count
+					}
+				}
+			}
+			if (!leastWorkedWorker) {
+				// if leastWorkedWorker is undefined
+				leastWorkedWorker = worker._id; // set leastWorkedWorker to worker id
+				leastWorkedWorkerTimeslotCount = workerJobCount; // set leastWorkedWorkerTimeslotCount to workerJobCount
+			} else {
+				if (workerJobCount < leastWorkedWorkerTimeslotCount) {
+					// if worker has less jobs than leastWorkedWorker
+					leastWorkedWorker = worker._id; // set leastWorkedWorker to worker id
+					leastWorkedWorkerTimeslotCount = workerJobCount; // set leastWorkedWorkerTimeslotCount to workerJobCount
+				}
+			}
+		}
+
+		let chosenTimeBlock = workerStartTimes[leastWorkedWorker][0]; // get the first available time block for the least worked worker
+		let chosenDay = Object.keys(chosenTimeBlock)[0]; // get the day of the chosen time block
+		let chosenTime = chosenTimeBlock[chosenDay][0]; // get the time of the chosen time block
+		let chosenWorker = leastWorkedWorker; // get the worker id of the chosen worker
+		let chosenWorkerSchedule = await Schedule.findById({ _id: specialists[chosenWorker].workSchedule }); // get the schedule of the chosen worker
+		let chosenWorkerScheduleConverted = convertMapofMaps(chosenWorkerSchedule.schedule); // convert the schedule of the chosen worker to an object
+		chosenWorkerScheduleConverted[chosenDay][chosenTime] = { ticketId: ticketId }; // set the ticket id of the chosen time block to the ticket id
+		//TODO if chosenDay and chosenTime already have a ticketId, find another time block for the lower priority job
+		for (let i = 0; i < expectedJobLength; i++) {
+			// loop through the expected job length
+			let time = chosenTimeBlock[chosenDay][i]; // get the time of the time block
+			chosenWorkerScheduleConverted[chosenDay][time] = { ticketId: ticketId }; // set the ticket id of the time block to the ticket id
+		}
+		await Schedule.findByIdAndUpdate({ _id: chosenWorkerSchedule._id }, { schedule: chosenWorkerScheduleConverted }); // save the schedule of the chosen worker
+		await Ticket.findByIdAndUpdate({ _id: ticketId }, { assignedWorker: chosenWorker }); // set the assigned worker of the ticket to the chosen worker
+		good({ res, data: { chosenWorker, chosenDay, chosenTime } }); // return the chosen worker, day, and time
 	}
 };
 
