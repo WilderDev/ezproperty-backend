@@ -45,6 +45,10 @@ const TicketSchema = new Schema({
 		type: Types.ObjectId,
 		ref: "User",
 		required: true
+	},
+	predictedTimeslots: {
+		type: Number,
+		required: true
 	}
 });
 
