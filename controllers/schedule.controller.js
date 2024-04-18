@@ -195,8 +195,8 @@ const trimSchedule = async function (req, res) {
 
 const schedule = async (req, res) => {
 	const { ticketId } = req.body; // get ticket id and expected job length from request body
-	const response = await autoSchedule(ticketId);
-	good({ res, data: response }); // return the response
+	const responseData = await autoSchedule(ticketId); // call the autoSchedule function with the ticket id
+	good({ res, data: responseData }); // return the response
 };
 
 module.exports = {
