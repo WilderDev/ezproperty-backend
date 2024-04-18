@@ -1,22 +1,24 @@
-const { Schema, model } = require("mongoose");
-
-const TimeslotSchema = new Schema(
-	{
-		ticketId: {
-			type: String
-		}
-	},
-	{ _id: false }
-);
+const { Schema, model, Types } = require("mongoose");
 
 const ScheduleSchema = new Schema({
 	schedule: {
 		type: Map,
 		of: {
 			type: Map,
-			of: TimeslotSchema
+			of: {
+				type: {
+					type: Types.ObjectId,
+					ref: "Ticket",
+					validate: {
+						validator: (v) => v === undefined || Types.ObjectId.isValid(v),
+						message: "ticketId must be a valid ObjectId or undefined"
+					}
+				}
+			}
 		}
 	}
 });
 
-module.exports = model("Schedule", ScheduleSchema);
+const Schedule = model("Schedule", ScheduleSchema);
+
+module.exports = Schedule;

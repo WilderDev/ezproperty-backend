@@ -15,13 +15,11 @@ const TicketSchema = new Schema({
 		required: true,
 		default: "MEDIUM"
 	},
-	type: [
-		{
-			type: String,
-			enum: ["Plumbing", "Electrical", "Structural", "HVAC", "General", "Pest", "Other"],
-			required: true
-		}
-	],
+	type: {
+		type: String,
+		enum: ["Plumbing", "Electrical", "Structural", "HVAC", "General", "Pest", "Other"],
+		required: true
+	},
 	description: {
 		type: String,
 		required: true,
@@ -47,7 +45,13 @@ const TicketSchema = new Schema({
 		type: Types.ObjectId,
 		ref: "User",
 		required: true
+	},
+	predictedTimeslots: {
+		type: Number,
+		required: true
 	}
 });
 
-module.exports = model("Ticket", TicketSchema);
+const Ticket = model("Ticket", TicketSchema);
+
+module.exports = Ticket;

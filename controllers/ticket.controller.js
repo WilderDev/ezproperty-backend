@@ -1,6 +1,8 @@
 const Ticket = require("../models/Ticket.model");
 const User = require("../models/User.model");
 const Property = require("../models/Property.model");
+const { good, bad } = require("../lib/utils/res");
+const { genAvailableWorkersSchedule } = require("../lib/utils/scheduler");
 const { sendEmail } = require("../lib/emails/nodemailer");
 
 const createTicket = async (req, res) => {
@@ -57,14 +59,15 @@ const createTicket = async (req, res) => {
 	res.status(201).json({ success: true, data: { createdTicket } });
 };
 const deleteTicket = async (req, res) => {
-	const { id: ticketID } = req.params;
-	const ticket = await Ticket.findByIdAndDelete({ _id: ticketID });
-
-	if (!ticket) {
-		return res.status(404).json({ msg: `No ticket with id: ${ticket}` });
+	const { id: ticketId } = req.params;
+	if (!ticketId) {
+		bad({ res, status: 400, message: "Ticket ID is required" });
 	}
-
-	res.status(200).json({ success: true, data: { ticket } });
+	const ticket = await Ticket.findByIdAndDelete({ _id: ticketId });
+	if (!ticket) {
+		bad({ res, status: 404, message: `No ticket found with id: ${ticketId}` });
+	}
+	good({ res, status: 200, data: ticket });
 };
 const updateTicket = async (req, res) => {
 	const { id: ticketID } = req.params;
@@ -140,7 +143,7 @@ const updateTicket = async (req, res) => {
 
 	console.log(ticket);
 
-	res.status(200).json({ success: true, data: { ticket } });
+	good({ res, status: 200, data: ticket });
 };
 const assignWorker = async (req, res) => {
 	const { id: ticketID } = req.params;
@@ -199,7 +202,7 @@ const getTicket = async (req, res) => {
 	const foundTenant = await User.findById(ticket.tenantId);
 
 	if (!ticket) {
-		return res.status(404).json({ msg: `No ticket found with id: ${ticketID}` });
+		bad({ res, status: 404, message: `No ticket found with id: ${ticketId}` });
 	}
 
 	res.status(200).json({
@@ -207,15 +210,15 @@ const getTicket = async (req, res) => {
 		data: {
 			ticket: {
 				progress: ticket.progress,
-                description: ticket.description,
-                type: ticket.type,
-                priorityLevel: ticket.priorityLevel,
-                propertyId: `${foundProperty.streetAddress} Unit: ${foundProperty.aptNumber}`,
-                assignedWorker: `${foundWorker.firstName} ${foundWorker.lastName}`,
-                tenantId: `${foundTenant.firstName} ${foundTenant.lastName}`
-            }
-        }
-    });
+				description: ticket.description,
+				type: ticket.type,
+				priorityLevel: ticket.priorityLevel,
+				propertyId: `${foundProperty.streetAddress} Unit: ${foundProperty.aptNumber}`,
+				assignedWorker: `${foundWorker.firstName} ${foundWorker.lastName}`,
+				tenantId: `${foundTenant.firstName} ${foundTenant.lastName}`
+			}
+		}
+	});
 };
 
 const getAllTickets = async (req, res) => {
@@ -234,7 +237,7 @@ const getAllTickets = async (req, res) => {
 		tickets = await Ticket.find({ assignedWorker: userId });
 	}
 
-	res.status(200).json({ success: true, data: { tickets } });
+	good({ res, status: 200, data: tickets });
 };
 
 module.exports = {

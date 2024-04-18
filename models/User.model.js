@@ -1,6 +1,5 @@
 // * IMPORTS
 const { Schema, model, Types } = require("mongoose");
-const Schedule = require("./Schedule.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -53,10 +52,7 @@ const UserSchema = new Schema({
 	},
 	phoneNumber: {
 		type: String,
-		match: [
-			/^(?:\+?1)?(?:\s|-)?\(?\d{3}\)?(?:\s|-)?\d{3}(?:\s|-)?\d{4}$/,
-			"please use a valid phone number"
-		]
+		match: [/^(?:\+?1)?(?:\s|-)?\(?\d{3}\)?(?:\s|-)?\d{3}(?:\s|-)?\d{4}$/, "please use a valid phone number"]
 	},
 	propertyId: {
 		type: Types.ObjectId,
@@ -65,12 +61,20 @@ const UserSchema = new Schema({
 	workSpecialization: [
 		{
 			type: String,
-			enum: ["HVAC", "ELECTRICAL", "PLUMBING", "STRUCTURAL", "GENERAL"]
+			enum: ["Plumbing", "Electrical", "Structural", "HVAC", "General", "Pest", "Other"]
 		}
 	],
 	workSchedule: {
 		type: Types.ObjectId,
 		ref: "Schedule"
+	},
+	isBooked: {
+		type: Boolean,
+		default: false
+	},
+	bookedTicket: {
+		type: Types.ObjectId,
+		ref: "Ticket"
 	},
 	startShift: {
 		type: String,
@@ -81,16 +85,13 @@ const UserSchema = new Schema({
 		default: "17:00"
 	},
 	managedWorkers: {
-		type: [Types.ObjectId],
-		ref: "User"
+		type: [{ type: Types.ObjectId, ref: "User" }]
 	},
 	managedTenants: {
-		type: [Types.ObjectId],
-		ref: "User"
+		type: [{ type: Types.ObjectId, ref: "User" }]
 	},
 	managedProperties: {
-		type: [Types.ObjectId],
-		ref: "Property"
+		type: [{ type: Types.ObjectId, ref: "Property" }]
 	},
 	manager: {
 		type: Types.ObjectId,
@@ -129,129 +130,6 @@ UserSchema.methods.generateToken = function () {
 	);
 
 	return token; // Return the token
-};
-
-// function to generate a schedule
-UserSchema.methods.genSchedule = async function (unixtimestamp) {
-	if (this.role !== "WORKER") return null; // if the user is not a staff member, return null
-	let date = new Date(unixtimestamp); // get the date
-	date.setUTCHours(0, 0, 0, 0); // set the date to midnight
-	let dayMillis = 1000 * 60 * 60 * 24; // 24 hours in milliseconds
-	const schedule = {}; // create a new object for the schedule
-	const forecastLength = parseInt(process.env.FORECAST_LENGTH, 10); // get the forecast length
-
-	let startShiftMinutes = parseInt(this.startShift.split(":")[1]); // get the start shift minutes
-	let startShiftHours = parseInt(this.startShift.split(":")[0]); // get the start shift hours
-	let endShiftMinutes = parseInt(this.endShift.split(":")[1]); // get the end shift minutes
-	let endShiftHours = parseInt(this.endShift.split(":")[0]); // get the end shift hours
-
-	for (let count = 0; count < forecastLength; count++) {
-		// for each day in the forecast
-		let nextDayTimestamp = date.getTime() + count * dayMillis; // get the next day in milliseconds
-		let nextDayISO = new Date(nextDayTimestamp).toISOString().split("T")[0]; // get the next day in ISO format
-		schedule[nextDayISO] = {}; // create a new object for each day
-
-		for (let hour = 0; hour < 24; hour++) {
-			// for each hour in the day
-			for (let minute = 0; minute < 60; minute += 30) {
-				// for each half hour in the hour
-				const timeslot = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`; // create the timeslot
-				const timeslotValue = // create the timeslot value
-					// turnary operator to check if the timeslot is before the start shift
-					// convert the timeslot to minutes and compare to the start shift
-					hour < startShiftHours || // if the hour is before the start shift
-					hour >= endShiftHours || // or after the end shift
-					(hour === startShiftHours && // or if the hour is the same as the start shift
-						minute < startShiftMinutes) || // and the minute is before the start shift
-					(hour === endShiftHours && // or if the hour is the same as the end shift
-						minute >= endShiftMinutes) // and the minute is after the end shift
-						? null // set to null
-						: { ticketId: undefined }; // otherwise, mark as undefined
-				schedule[nextDayISO][timeslot] = timeslotValue; // fill in the timeslot
-			}
-		}
-	}
-	const createdSchedule = await Schedule.create(schedule); // create the schedule
-	await User.updateOne(
-		{ _id: this._id }, // update the user
-		{ workSchedule: createdSchedule._id } // with the new schedule
-	);
-};
-
-// function to extend the schedule
-UserSchema.methods.extendSchedule = async function () {
-	if (this.role !== "WORKER") return null; // if the user is not a staff member, return null
-	let schedule = await Schedule.findOne({ _id: this.workSchedule }); // find the schedule using the user's schedule id
-	if (!schedule) return null; // if the schedule is not found, return null
-
-	let lastDay = Object.keys(schedule).sort().pop(); // get the last day in the schedule
-	let lastDayDate = new Date(lastDay); // get the last day in date format
-	let forecastLength = parseInt(process.env.FORECAST_LENGTH, 10); // get the forecast length
-
-	let startShiftMinutes = parseInt(this.startShift.split(":")[1]); // get the start shift minutes
-	let startShiftHours = parseInt(this.startShift.split(":")[0]); // get the start shift hours
-	let endShiftMinutes = parseInt(this.endShift.split(":")[1]); // get the end shift minutes
-	let endShiftHours = parseInt(this.endShift.split(":")[0]); // get the end shift hours
-
-	for (let count = 1; count <= forecastLength; count++) {
-		let nextDayTimestamp = lastDayDate.getTime() + count * 1000 * 60 * 60 * 24; // get the next day in milliseconds
-		let nextDayISO = new Date(nextDayTimestamp).toISOString().split("T")[0]; // get the next day in ISO format
-
-		if (!schedule[nextDayISO]) {
-			// if the next day is not in the schedule
-			schedule[nextDayISO] = {}; // create a new object for the day
-			for (let hour = 0; hour < 24; hour++) {
-				// for each hour in the day
-				for (let minute = 0; minute < 60; minute += 30) {
-					// for each half hour in the hour
-					const timeslot = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`; // create the timeslot
-					// turnary operator to check if the timeslot is before the start shift
-					// convert the timeslot to minutes and compare to the start shift
-					const timeslotValue = // create the timeslot value
-						hour < startShiftHours || // if the hour is before the start shift
-						hour >= endShiftHours || // or after the end shift
-						(hour === startShiftHours && // or if the hour is the same as the start shift
-							minute < startShiftMinutes) || // and the minute is before the start shift
-						(hour === endShiftHours && // or if the hour is the same as the end shift
-							minute >= endShiftMinutes) // and the minute is after the end shift
-							? null // set to null
-							: { ticketId: undefined }; // otherwise, mark as undefined
-					schedule[nextDayISO][timeslot] = timeslotValue; // fill in the timeslot
-				}
-			}
-		}
-	}
-	await schedule.save(); // save the schedule
-	return schedule; // return the schedule
-};
-
-// function to trim the schedule
-UserSchema.methods.trimSchedule = async function () {
-	if (this.role !== "WORKER") return null; // if the user is not a staff member, return null
-	let schedule = await Schedule.findOne({ _id: this.workSchedule }); // find the schedule using the user's schedule id
-	if (!schedule) return null; // if the schedule is not found, return null
-
-	let today = new Date(); // get today's date
-	today.setUTCHours(0, 0, 0, 0); // set the time to midnight
-	let forecastLength = parseInt(process.env.FORECAST_LENGTH, 10); // get the forecast length
-
-	const scheduleWindow = new Set(); // create a new set
-	for (let count = 0; count < forecastLength; count++) {
-		// for each day in the forecast
-		let nextDayTimestamp = today.getTime() + count * 1000 * 60 * 60 * 24; // get the next day in milliseconds
-		let nextDayISO = new Date(nextDayTimestamp).toISOString().split("T")[0]; // get the next day in ISO format
-		scheduleWindow.add(nextDayISO); // add the day to the schedule window
-	}
-	Object.keys(schedule.toJSON()).forEach((day) => {
-		// get the keys of the schedule
-		// for each day in the schedule
-		if (!scheduleWindow.has(day)) {
-			// if the day is not in the schedule window
-			delete schedule[day]; // delete the day from the schedule
-		}
-	});
-	await schedule.save(); // save the schedule
-	return schedule; // return the schedule
 };
 
 // * MODEL

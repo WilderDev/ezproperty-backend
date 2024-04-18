@@ -5,16 +5,7 @@ const { good, bad } = require("../lib/utils/res");
 // * CONTROLLERS
 // create new user as worker
 const createUserAsWorker = async (req, res) => {
-	const {
-		username,
-		email,
-		password,
-		firstName,
-		middleInitial,
-		lastName,
-		phoneNumber,
-		workSpecialization
-	} = req.body; // get user data from body
+	const { username, email, password, firstName, middleInitial, lastName, phoneNumber, workSpecialization } = req.body; // get user data from body
 
 	const user = new User({
 		username,
@@ -146,9 +137,7 @@ const removeSpecialization = async (req, res) => {
 		// if user not found
 		return bad({ res, status: 404, message: "User Not Found" }); // return 404 if user not found
 	}
-	foundUser.workSpecialization = foundUser.workSpecialization.filter(
-		(spec) => spec !== workSpecialization
-	); // remove work specialization
+	foundUser.workSpecialization = foundUser.workSpecialization.filter((spec) => spec !== workSpecialization); // remove work specialization
 	await foundUser.save(); // save user
 	return good({ res, status: 200, data: foundUser }); // return 200 and worker data
 };

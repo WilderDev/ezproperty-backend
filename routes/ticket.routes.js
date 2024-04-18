@@ -1,14 +1,7 @@
 const router = require("express").Router();
 const { authenticateUser } = require("../middleware/auth.middleware");
 
-const {
-	createTicket,
-	deleteTicket,
-	updateTicket,
-	getTicket,
-	getAllTickets,
-	assignWorker
-} = require("../controllers/ticket.controller");
+const { createTicket, deleteTicket, updateTicket, getTicket, getAllTickets, assignWorker } = require("../controllers/ticket.controller");
 
 router.post("/create", authenticateUser, createTicket);
 router.delete("/delete/:id", authenticateUser, deleteTicket);
