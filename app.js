@@ -26,7 +26,7 @@ app.use(express.json()); // Body Parser
 app.use(helmet()); // Header Security
 app.use(
 	cors({
-		origin: "http://localhost:4200",
+		origin: "*",
 		credentials: true
 	})
 ); // CORS
