@@ -1,5 +1,5 @@
 // * IMPORTS
-const { Schema, model } = require("mongoose");
+const { Schema, model, Types } = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -7,26 +7,26 @@ const jwt = require("jsonwebtoken");
 const UserSchema = new Schema({
 	username: {
 		type: String,
-		required: true,
+		required: [true, "Please provide username"],
 		minlength: 4,
 		maxlength: 32,
 		unique: true
 	},
 	email: {
 		type: String,
-		required: true,
-		match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, "please use a valid email address"],
-		unique: true
+		unique: true,
+		required: [true, "please use email address"],
+		match: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/
 	},
 	password: {
 		type: String,
-		required: [true, "please provide a password"],
+		required: [true, "please provide password"],
 		minlength: 6
 	},
 	role: {
 		type: String,
-		enum: ["ADMIN", "USER"],
-		default: "USER"
+		enum: ["MANAGER", "WORKER", "TENANT"],
+		required: true
 	},
 	verificationToken: String,
 	isVerified: {
@@ -39,6 +39,63 @@ const UserSchema = new Schema({
 	},
 	passwordTokenExpirationDate: {
 		type: Date
+	},
+	firstName: {
+		type: String
+	},
+	middleInitial: {
+		type: String,
+		maxLength: 1
+	},
+	lastName: {
+		type: String
+	},
+	phoneNumber: {
+		type: String,
+		match: [/^(?:\+?1)?(?:\s|-)?\(?\d{3}\)?(?:\s|-)?\d{3}(?:\s|-)?\d{4}$/, "please use a valid phone number"]
+	},
+	propertyId: {
+		type: Types.ObjectId,
+		ref: "Property"
+	},
+	workSpecialization: [
+		{
+			type: String,
+			enum: ["Plumbing", "Electrical", "Structural", "HVAC", "General", "Pest", "Other"]
+		}
+	],
+	workSchedule: {
+		type: Types.ObjectId,
+		ref: "Schedule"
+	},
+	isBooked: {
+		type: Boolean,
+		default: false
+	},
+	bookedTicket: {
+		type: Types.ObjectId,
+		ref: "Ticket"
+	},
+	startShift: {
+		type: String,
+		default: "08:00"
+	},
+	endShift: {
+		type: String,
+		default: "17:00"
+	},
+	managedWorkers: {
+		type: [{ type: Types.ObjectId, ref: "User" }]
+	},
+	managedTenants: {
+		type: [{ type: Types.ObjectId, ref: "User" }]
+	},
+	managedProperties: {
+		type: [{ type: Types.ObjectId, ref: "Property" }]
+	},
+	manager: {
+		type: Types.ObjectId,
+		ref: "User"
 	}
 });
 
@@ -54,8 +111,8 @@ UserSchema.pre("save", async function () {
 
 // * METHODS
 // Compare password with hashed password
-UserSchema.methods.comparePass = async function (candidatePass) {
-	const isMatch = await bcrypt.compare(candidatePass, this.password); // Compare the candidate password with the hashed password
+UserSchema.methods.comparePass = async function (candidatePassword) {
+	const isMatch = await bcrypt.compare(candidatePassword, this.password); // Compare the candidate password with the hashed password
 
 	return isMatch; // Return the result
 };

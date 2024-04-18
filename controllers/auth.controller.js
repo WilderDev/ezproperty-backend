@@ -9,12 +9,14 @@ const { good, bad } = require("../lib/utils/res");
 // * CONTROLLERS
 // CONTROLLER: Register User
 const registerUser = async (req, res) => {
-	const { email, password1, password2, username } = req.body; // Destructure the email, password, and username from the request body
+	const { username, email, password, role } = req.body; // Destructure the email, password, and username from the request body
 
-	const emailTaken = await User.findOne({ email }); // Check if the email is already taken
+	console.log(email, password, username, role);
+
+	const emailAlreadyExists = await User.findOne({ email }); // Check if the email is already taken
 
 	// If the email is already taken, send a 400 response
-	if (emailTaken) {
+	if (emailAlreadyExists) {
 		return bad({ res, message: "Invalid username or email" });
 	}
 
@@ -25,31 +27,27 @@ const registerUser = async (req, res) => {
 		return bad({ res, message: "Invalid username or email" });
 	}
 
-	const isFirstUser = (await User.countDocuments({})) === 0; // Check if the user is the first user
-	const role = isFirstUser ? "ADMIN" : "USER"; // If the user is the first user, set the role to "admin", otherwise set it to "user"
+	// const isFirstUser = (await User.countDocuments({})) === 0; // Check if the user is the first user
+	// const role = isFirstUser ? "ADMIN" : "USER"; // If the user is the first user, set the role to "admin", otherwise set it to "user"
 
 	const verificationToken = crypto.randomBytes(2 ** 8).toString("hex"); // Generate a verification token
 
 	// If the email, password, or username is missing, send a 400 response
-	if (!email || !password1 || !password2 || !username) {
+	if (!email || !password || !username) {
 		return bad({ res, message: "Invalid Fields" });
-	}
-
-	// If the passwords don't match, send a 400 response
-	if (password1 !== password2) {
-		return bad({ res, message: "Passwords do not match" });
 	}
 
 	// Create a new user
 	const user = await User.create({
-		email,
-		password: password1,
 		username,
-		role,
+		email,
+		password,
+		role: "MANAGER",
 		verificationToken
 	});
 
-	let serverUrlString = process.env.SERVER_URL; // TODO: Set this to the server URL depending on the environment
+	let serverUrlString = "http://localhost:4200/";
+	// TODO: Set this to the server URL depending on the environment
 
 	// Send a verification email
 	await sendVerificationEmail({
@@ -215,12 +213,12 @@ const verifyEmail = async (req, res) => {
 
 	// If the user doesn't exist, send a 401 response
 	if (!user) {
-		return bad({ res, status: 401, message: "Verification failed" });
+		return bad({ res, status: 400, message: "Verification failed" });
 	}
 
 	// If the user is already verified, send a 401 response
 	if (user.verificationToken !== verificationToken) {
-		return bad({ res, status: 401, message: "Verification failed" });
+		return bad({ res, status: 400, message: "Verification failed" });
 	}
 
 	user.isVerified = true; // Set the user to verified
@@ -267,7 +265,40 @@ const me = async (req, res) => {
 		return bad({ res, status: 401, message: "User not found" });
 	}
 
-	return good({ res, data: { user } }); // Send a 200 response with the user
+	return good({
+		res,
+		data: {
+			user: { id: user._id, email: user.email, username: user.username, role: user.role }
+		}
+	}); // Send a 200 response with the user
+};
+
+// CONTROLLER: Delete User
+const deleteUser = async (req, res) => {
+	// get the user id
+	const { id } = req.params;
+
+	// if no id the return bad
+	if (!id) {
+		return bad({ res, status: 400, message: "No user id provided" });
+	}
+
+	// if no user found then return error
+	if (!User.findOne({ _id: id })) {
+		return bad({ res, status: 400, message: "User not found" });
+	}
+
+	// find the user by id and delete it from the database
+	const deletedUser = await User.findOneAndDelete({ _id: id }); // Find the user by id
+
+	// return the deleted user
+	return good({ res, data: { user: deletedUser } }); // Send a 200 response
+};
+
+const getAllUsers = async (req, res) => {
+	const users = await User.find({});
+
+	res.status(200).json({ success: true, data: { users } });
 };
 
 // * EXPORTS
@@ -279,5 +310,7 @@ module.exports = {
 	resetPass,
 	verifyEmail,
 	resendVerification,
-	me
+	me,
+	deleteUser,
+	getAllUsers
 };
