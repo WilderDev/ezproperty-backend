@@ -39,16 +39,16 @@ const TicketSchema = new Schema({
 	manager: {
 		type: Types.ObjectId,
 		ref: "User",
-		required: true
+		// required: true
 	},
 	tenantId: {
 		type: Types.ObjectId,
 		ref: "User",
-		required: true
+		// required: true
 	},
 	predictedTimeslots: {
 		type: Number,
-		required: true
+		// required: true
 	}
 });
 

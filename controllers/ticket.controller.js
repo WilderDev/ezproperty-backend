@@ -2,7 +2,7 @@ const Ticket = require("../models/Ticket.model");
 const User = require("../models/User.model");
 const Property = require("../models/Property.model");
 const { good, bad } = require("../lib/utils/res");
-const { genAvailableWorkersSchedule } = require("../lib/utils/scheduler");
+// const { genAvailableWorkersSchedule } = require("../lib/utils/scheduler");
 const { sendEmail } = require("../lib/emails/nodemailer");
 
 const createTicket = async (req, res) => {
@@ -67,7 +67,7 @@ const deleteTicket = async (req, res) => {
 	if (!ticket) {
 		bad({ res, status: 404, message: `No ticket found with id: ${ticketId}` });
 	}
-	good({ res, status: 200, data: ticket });
+	res.status(200).json({ success: true, data: { ticket } });;
 };
 const updateTicket = async (req, res) => {
 	const { id: ticketID } = req.params;
@@ -143,7 +143,7 @@ const updateTicket = async (req, res) => {
 
 	console.log(ticket);
 
-	good({ res, status: 200, data: ticket });
+	res.status(200).json({ success: true, data: { ticket } });;
 };
 const assignWorker = async (req, res) => {
 	const { id: ticketID } = req.params;
@@ -202,7 +202,7 @@ const getTicket = async (req, res) => {
 	const foundTenant = await User.findById(ticket.tenantId);
 
 	if (!ticket) {
-		bad({ res, status: 404, message: `No ticket found with id: ${ticketId}` });
+		bad({ res, status: 400, message: `No ticket found with id: ${ticketID}` });
 	}
 
 	res.status(200).json({
@@ -236,8 +236,8 @@ const getAllTickets = async (req, res) => {
 	if (userRole === "WORKER") {
 		tickets = await Ticket.find({ assignedWorker: userId });
 	}
-
-	good({ res, status: 200, data: tickets });
+	 console.log(tickets)
+	 res.status(200).json({ success: true, data: { tickets } });
 };
 
 module.exports = {
