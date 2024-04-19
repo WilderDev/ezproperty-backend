@@ -26,7 +26,7 @@ app.use(express.json()); // Body Parser
 app.use(helmet()); // Header Security
 app.use(
 	cors({
-		origin: "*",
+		origin: "https://www.ezpropmanager.com",
 		credentials: true
 	})
 ); // CORS
